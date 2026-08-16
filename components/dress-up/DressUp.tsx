@@ -119,7 +119,7 @@ export default function DressUp() {
                   key={s.id}
                   onClick={() => setSceneId(s.id)}
                   aria-pressed={selected}
-                  className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border transition-colors ${
+                  className={`relative aspect-[3/4] w-28 shrink-0 overflow-hidden rounded-2xl border transition-colors ${
                     selected ? "border-coral" : "border-cream/20 hover:border-cream/50"
                   }`}
                 >
@@ -127,10 +127,10 @@ export default function DressUp() {
                     src={s.src}
                     alt={s.name}
                     fill
-                    sizes="64px"
+                    sizes="112px"
                     className="object-cover"
                   />
-                  <span className="absolute inset-x-0 bottom-0 bg-plum-deep/70 px-1 py-0.5 text-[10px] font-semibold text-cream/90">
+                  <span className="absolute inset-x-0 bottom-0 bg-plum-deep/70 px-1.5 py-1 text-xs font-semibold text-cream/90">
                     {s.name}
                   </span>
                 </button>
