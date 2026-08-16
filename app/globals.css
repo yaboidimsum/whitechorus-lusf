@@ -68,9 +68,10 @@ body {
   }
 }
 
-/* Visible keyboard focus everywhere */
+/* Visible keyboard focus everywhere — neutral so it doesn't clash with the
+   coral accents (ui-polish: keep focus outlines grey/black/white). */
 :focus-visible {
-  outline: 2px solid var(--color-coral);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 

@@ -40,12 +40,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         {/* Blurred L.U.S.F. cover backdrop + plum wash for legibility.
-            Fixed and -z-10 so in-flow content paints above it. */}
+            Fixed and -z-10 so in-flow content paints above it. Decorative, so
+            pointer-events are disabled (ui-polish). */}
         <div
           aria-hidden
-          className="fixed -inset-6 -z-10 bg-[url('/assets/lufs/background/lufs-cover.jpg')] bg-cover bg-center blur-[6px]"
+          className="pointer-events-none fixed -inset-6 -z-10 bg-[url('/assets/lufs/background/lufs-cover.jpg')] bg-cover bg-center blur-[6px]"
         />
-        <div aria-hidden className="fixed inset-0 -z-10 bg-plum-deep/70" />
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-plum-deep/70" />
         {children}
       </body>
     </html>

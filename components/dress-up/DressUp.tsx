@@ -159,7 +159,7 @@ export default function DressUp() {
 
       {/* Hall of Fame */}
       <section className="pb-8">
-        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-cream/60">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-cream/60 text-balance">
           Take a look at all the outfits in the Hall of Fame
         </h2>
         {savedLooks.length > 0 ? (

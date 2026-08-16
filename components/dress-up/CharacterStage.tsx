@@ -29,7 +29,7 @@ export default function CharacterStage({ scene, looks, activeId }: StageProps) {
         {/* Soft vignette for depth and legibility */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_20%,transparent_55%,rgba(20,8,22,0.55)_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_20%,transparent_55%,rgba(20,8,22,0.55)_100%)]"
         />
 
         {/* Both artists, always visible */}

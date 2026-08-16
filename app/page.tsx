@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main
       id="main"
-      className="flex-1 px-4 py-8 sm:px-6"
+      className="flex-1 px-4 py-8 pb-[env(safe-area-inset-bottom)] sm:px-6"
     >
       <header className="mx-auto mb-6 flex max-w-md flex-col items-center text-center">
         <Image
@@ -20,7 +20,7 @@ export default function Home() {
         <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.3em] text-pink-neon">
           White Chorus · L.U.S.F.
         </p>
-        <h1 className="font-display mt-1 text-4xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl">
+        <h1 className="font-display mt-1 text-4xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl text-balance">
           Dress for the afterglow
         </h1>
         <p className="mt-3 max-w-sm text-pretty text-sm text-cream/65">
