@@ -33,22 +33,24 @@ export default function Home() {
       <DressUp />
 
       {/* Melayang — lead single */}
-      <section className="mx-auto mt-12 w-full max-w-2xl pb-16 text-center lg:max-w-5xl">
-        <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-pink-neon">
-          White Chorus · Melayang
-        </p>
-        <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
-          An anthem for the ones lost in Jakarta&rsquo;s night
-        </h2>
-        <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/65">
-          The lead single from L.U.S.F. — trip-hop and nostalgic pop for the
-          afterglow.
-        </p>
-        <div className="mx-auto mt-6 max-w-xl overflow-hidden rounded-[2rem] border border-cream/15 shadow-stage">
-          <YouTubeEmbed
-            videoid="MI_Kvwd7zLA"
-            playlabel="Play Melayang by White Chorus"
-          />
+      <section className="border-y border-cream/10 bg-plum-deep/40 py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-2xl text-center lg:max-w-5xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-pink-neon">
+            White Chorus · Melayang
+          </p>
+          <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
+            An anthem for the ones lost in Jakarta&rsquo;s night
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/65">
+            The lead single from L.U.S.F. — trip-hop and nostalgic pop for the
+            afterglow.
+          </p>
+          <div className="mx-auto mt-8 max-w-xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
+            <YouTubeEmbed
+              videoid="MI_Kvwd7zLA"
+              playlabel="Play Melayang by White Chorus"
+            />
+          </div>
         </div>
       </section>
     </main>
