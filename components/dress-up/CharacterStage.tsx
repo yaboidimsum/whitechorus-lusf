@@ -67,7 +67,7 @@ function CharacterFigure({
     <figure
       role="img"
       aria-label={description}
-      className={`relative w-[46%] max-w-[210px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
+      className={`relative w-[46%] max-w-[280px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
         active ? "z-10 -translate-y-1" : "opacity-90"
       }`}
     >
@@ -77,7 +77,7 @@ function CharacterFigure({
           alt=""
           fill
           priority
-          sizes="(max-width: 640px) 46vw, 200px"
+          sizes="(max-width: 640px) 46vw, 280px"
           className="object-contain"
         />
         {worn.map((item) => (
@@ -86,7 +86,7 @@ function CharacterFigure({
             src={item.src}
             alt=""
             fill
-            sizes="(max-width: 640px) 46vw, 200px"
+            sizes="(max-width: 640px) 46vw, 280px"
             className="object-contain"
           />
         ))}
