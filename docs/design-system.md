@@ -59,17 +59,28 @@ Rules:
 
 ## Spacing & Radius
 
-- Layout column: `max-w-md` (mobile-first, centered game column).
-- Gaps: `gap-2` (controls), `gap-3` (grid), `gap-5` (sections).
+Three-tier vertical rhythm (one value per tier — don't mix):
+
+| Tier | Value | Applies to |
+|---|---|---|
+| Control | 8–12px (`gap-2`/`gap-3`) | switcher, scene thumbnails, item grid |
+| Game section | 20px (`gap-5`) | sections inside the DressUp column |
+| Region | 48px (`mt-12`/`mb-12`) | header→game, Hall of Fame→music |
+| Footer boundary | 64px (`pb-16`) | last section → footer rule |
+
+One margin per boundary — never stack a previous section's `pb-*` with the next section's `mt-*`.
+
+- Layout column: `max-w-2xl`, `lg:max-w-5xl` (mobile-first, centered).
+- Horizontal rhythm: `px-4`, `sm:px-6` on `main`.
 - Radius: `rounded-full` for buttons/tabs, `rounded-2xl` for cards and item
-  tiles, `rounded-[2rem]` for the stage.
+  tiles, `rounded-[2rem]` for the stage and video embed.
 - Tap targets ≥ 44px (`py-3`+ on primary controls).
 
 ## Components
 
 ### Stage (`components/dress-up/CharacterStage.tsx`)
 
-- `aspect-[3/4]`, scene art as `object-cover` backdrop.
+- `aspect-[4/5]`, scene art as `object-cover` backdrop.
 - Both artists always visible, standing on the scene, `object-contain`.
 - Active character lifts (`-translate-y-1`) and gets a coral glow ring.
 - Layers stack over the base body in `layerOrder` order (hair → accessory).
@@ -83,7 +94,7 @@ Rules:
 
 ### Scene carousel
 
-- Horizontal row of square scene thumbnails.
+- Horizontal row of portrait (`aspect-[3/4]`, `w-28`) scene thumbnails.
 - `aria-pressed` for the selected scene; name label on each.
 
 ### Wardrobe (`components/dress-up/WardrobeGrid.tsx`)

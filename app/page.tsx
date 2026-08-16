@@ -9,7 +9,7 @@ export default function Home() {
       id="main"
       className="flex-1 px-4 py-8 pb-[env(safe-area-inset-bottom)] sm:px-6"
     >
-      <header className="mx-auto mb-6 flex max-w-2xl flex-col items-center text-center lg:max-w-5xl">
+      <header className="mx-auto mb-12 flex max-w-2xl flex-col items-center text-center lg:max-w-5xl">
         <Image
           src={branding.signage.src}
           alt="L.U.S.F. Dress Up Machine"
@@ -33,7 +33,7 @@ export default function Home() {
       <DressUp />
 
       {/* Melayang — lead single */}
-      <section className="mx-auto mt-14 w-full max-w-2xl text-center lg:max-w-5xl">
+      <section className="mx-auto mt-12 w-full max-w-2xl pb-16 text-center lg:max-w-5xl">
         <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-pink-neon">
           White Chorus · Melayang
         </p>
