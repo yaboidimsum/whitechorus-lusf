@@ -75,7 +75,7 @@ export default function DressUp() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
       {/* Screen-reader announcements */}
       <p role="status" className="sr-only">
         {announcement}

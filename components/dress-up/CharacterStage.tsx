@@ -33,7 +33,7 @@ export default function CharacterStage({ scene, looks, activeId }: StageProps) {
         />
 
         {/* Both artists, always visible */}
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1 px-2 sm:gap-3">
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-center px-2">
           {characters.map((c) => (
             <CharacterFigure
               key={c.id}
@@ -67,7 +67,7 @@ function CharacterFigure({
     <figure
       role="img"
       aria-label={description}
-      className={`relative w-[46%] max-w-[280px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
+      className={`relative w-[55%] max-w-[400px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
         active ? "z-10 -translate-y-1" : "opacity-90"
       }`}
     >
@@ -77,7 +77,7 @@ function CharacterFigure({
           alt=""
           fill
           priority
-          sizes="(max-width: 640px) 46vw, 280px"
+          sizes="(max-width: 640px) 55vw, 400px"
           className="object-contain"
         />
         {worn.map((item) => (
@@ -86,7 +86,7 @@ function CharacterFigure({
             src={item.src}
             alt=""
             fill
-            sizes="(max-width: 640px) 46vw, 280px"
+            sizes="(max-width: 640px) 55vw, 400px"
             className="object-contain"
           />
         ))}

@@ -8,7 +8,7 @@ export default function Home() {
       id="main"
       className="flex-1 px-4 py-8 pb-[env(safe-area-inset-bottom)] sm:px-6"
     >
-      <header className="mx-auto mb-6 flex max-w-xl flex-col items-center text-center">
+      <header className="mx-auto mb-6 flex max-w-2xl flex-col items-center text-center">
         <Image
           src={branding.signage.src}
           alt="L.U.S.F. Dress Up Machine"
