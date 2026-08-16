@@ -1,19 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fdf2f8;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #241a25;
+  --foreground: #f5e7e4;
+
+  /* L.U.S.F. dress-up palette */
+  --color-plum: #3b2d38;
+  --color-plum-deep: #241a25;
+  --color-lavender: #a690a5;
+  --color-coral: #ff9a83;
+  --color-pink-neon: #d36daf;
+  --color-cream: #f5e7e4;
+  --color-ink-violet: #2b1b31;
+  --shadow-stage: 0 24px 60px rgba(20, 8, 22, 0.55);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-plum: var(--color-plum);
+  --color-plum-deep: var(--color-plum-deep);
+  --color-lavender: var(--color-lavender);
+  --color-coral: var(--color-coral);
+  --color-pink-neon: var(--color-pink-neon);
+  --color-cream: var(--color-cream);
+  --color-ink-violet: var(--color-ink-violet);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --shadow-stage: var(--shadow-stage);
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

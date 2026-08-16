@@ -1,203 +1,201 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { characters, wardrobe } from "@/data/characters";
-import { deleteLook, loadLooks, saveLook, subscribeLooks } from "@/lib/looks";
-import type { Look, SavedLook, SlotId, WardrobeItem } from "@/lib/types";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { sceneById, scenes } from "@/data/assets";
+import { characters } from "@/data/characters";
+import { deleteLook, loadLooks, restoreLook, saveLook, subscribeLooks } from "@/lib/looks";
+import type { CharacterId, Look, SavedLook, SlotId } from "@/lib/types";
+import CharacterStage from "./CharacterStage";
+import WardrobeGrid from "./WardrobeGrid";
 
-const slotLabels: Record<SlotId, string> = {
-  hair: "Hair",
-  top: "Top",
-  bottom: "Bottom",
-  shoes: "Shoes",
-  accessory: "Accessory",
-};
+const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
 
-// Index maps built once at module load — O(1) lookups in render (rule `js-index-maps`)
-const itemById = new Map(wardrobe.map((w) => [w.id, w]));
-const itemsBySlot = new Map<SlotId, WardrobeItem[]>();
-for (const item of wardrobe) {
-  const list = itemsBySlot.get(item.slot);
-  if (list) list.push(item);
-  else itemsBySlot.set(item.slot, [item]);
-}
-
-/** Base body placeholder for each character while no image assets exist. */
-const baseColor: Record<string, string> = {
-  clara: "#f3c6a5",
-  emir: "#e0b18e",
-};
+const emptyLooks = (): Record<CharacterId, Look> => ({ emir: {}, friska: {} });
 
 export default function DressUp() {
-  const [characterId, setCharacterId] = useState("clara");
-  const [look, setLook] = useState<Look>({});
+  const [activeId, setActiveId] = useState<CharacterId>("emir");
+  const [looks, setLooks] = useState<Record<CharacterId, Look>>(emptyLooks);
+  const [sceneId, setSceneId] = useState(scenes[0].id);
   const [savedLooks, setSavedLooks] = useState<SavedLook[]>(() => loadLooks());
+  const [pendingDelete, setPendingDelete] = useState<SavedLook | null>(null);
+  const [announcement, setAnnouncement] = useState("");
 
   // Cross-tab sync (rule `client-localstorage-schema`)
   useEffect(() => subscribeLooks(() => setSavedLooks(loadLooks())), []);
 
-  const character = useMemo(
-    () => characters.find((c) => c.id === characterId) ?? characters[0],
-    [characterId],
-  );
+  const scene = sceneById.get(sceneId) ?? scenes[0];
+  const character = characters.find((c) => c.id === activeId) ?? characters[0];
+  const hasSelection = Object.values(looks).some((l) => Object.keys(l).length > 0);
 
-  const itemFor = (slot: SlotId): WardrobeItem | undefined =>
-    look[slot] ? itemById.get(look[slot]!) : undefined;
-
-  const selectItem = (slot: SlotId, itemId: string) => {
-    setLook((prev) => {
-      const next = { ...prev };
+  const toggleItem = (slot: SlotId, itemId: string) => {
+    setLooks((prev) => {
+      const current = prev[activeId];
+      const next: Look = { ...current };
       if (next[slot] === itemId) {
         delete next[slot]; // tap again to undress
       } else {
         next[slot] = itemId;
       }
-      return next;
+      return { ...prev, [activeId]: next };
     });
   };
 
-  const switchCharacter = (id: string) => {
-    setCharacterId(id);
-    setLook({});
-  };
-
   const handleSave = () => {
-    const saved = saveLook(characterId, look);
-    setSavedLooks((prev) => [...prev, saved]);
+    const saved = saveLook(looks, sceneId);
+    setSavedLooks((prev) => [saved, ...prev]);
+    setAnnouncement("Outfit saved to the Hall of Fame.");
   };
 
   const handleDelete = (id: string) => {
+    const target = savedLooks.find((s) => s.id === id);
+    if (!target) return;
     deleteLook(id);
     setSavedLooks((prev) => prev.filter((s) => s.id !== id));
+    setPendingDelete(target);
+    setAnnouncement("Outfit deleted.");
   };
 
-  const itemsForSlot = (slot: SlotId) => itemsBySlot.get(slot) ?? [];
+  const handleUndo = () => {
+    if (!pendingDelete) return;
+    restoreLook(pendingDelete);
+    setSavedLooks((prev) => [pendingDelete, ...prev]);
+    setPendingDelete(null);
+    setAnnouncement("Outfit restored.");
+  };
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-[1fr_320px]">
-      {/* Canvas */}
-      <section className="rounded-3xl border border-black/10 bg-gradient-to-b from-pink-50 to-white p-6">
-        <div className="mb-4 flex gap-2">
-          {characters.map((c) => (
+    <div className="mx-auto flex w-full max-w-md flex-col gap-5">
+      {/* Screen-reader announcements */}
+      <p role="status" className="sr-only">
+        {announcement}
+      </p>
+
+      <CharacterStage scene={scene} looks={looks} activeId={activeId} />
+
+      {/* Character switcher */}
+      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Choose who to dress">
+        {characters.map((c) => {
+          const active = c.id === activeId;
+          return (
             <button
               key={c.id}
-              onClick={() => switchCharacter(c.id)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                c.id === characterId
-                  ? "bg-black text-white"
-                  : "bg-black/5 text-black/70 hover:bg-black/10"
+              onClick={() => setActiveId(c.id)}
+              aria-pressed={active}
+              className={`rounded-full border px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition-colors ${
+                active
+                  ? "border-coral bg-coral text-plum-deep"
+                  : "border-cream/25 text-cream/85 hover:border-cream/60"
               }`}
             >
-              {c.name}
+              Dress {c.name}
             </button>
-          ))}
-        </div>
-
-        {/* Layered character render (rule `bundle-conditional`: assets load only when slotted) */}
-        <div className="relative mx-auto aspect-[3/4] w-64 overflow-hidden rounded-2xl bg-[#fdf2f8]">
-          <div
-            className="absolute inset-x-10 bottom-0 top-8"
-            style={{ backgroundColor: baseColor[characterId] }}
-            aria-hidden
-          />
-          {character.slots.map((slot) => {
-            const item = itemFor(slot);
-            if (!item) return null;
-            return item.image ? (
-              // eslint-disable-next-line @next/next/no-img-element -- placeholder until next/image with real assets
-              <img
-                key={item.id}
-                src={item.image}
-                alt={item.name}
-                className="absolute inset-0 h-full w-full"
-              />
-            ) : (
-              <div
-                key={item.id}
-                className="absolute inset-0"
-                style={{ backgroundColor: item.color }}
-                aria-label={item.name}
-              />
-            );
-          })}
-          <p className="absolute bottom-3 left-0 right-0 text-center text-sm font-medium text-black/50">
-            {character.name}
-          </p>
-        </div>
-
-        <button
-          onClick={handleSave}
-          disabled={Object.keys(look).length === 0}
-          className="mt-6 w-full rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-30"
-        >
-          Save look
-        </button>
-      </section>
-
-      {/* Wardrobe */}
-      <aside className="flex flex-col gap-6">
-        {character.slots.map((slot) => {
-          const options = itemsForSlot(slot);
-          return (
-            <div key={slot}>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-black/40">
-                {slotLabels[slot]}
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {options.map((item) => {
-                  const active = itemFor(slot)?.id === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => selectItem(slot, item.id)}
-                      aria-pressed={active}
-                      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                        active
-                          ? "border-black bg-black text-white"
-                          : "border-black/15 text-black/70 hover:border-black/40"
-                      }`}
-                    >
-                      {item.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           );
         })}
-      </aside>
+      </div>
 
-      {/* Saved looks */}
-      {savedLooks.length > 0 ? (
-        <section className="md:col-span-2">
-          <h2 className="mb-3 text-sm font-semibold text-black/60">
-            Saved looks
-          </h2>
-          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {savedLooks.map((s) => (
-              <li
-                key={s.id}
-                className="flex items-center justify-between rounded-2xl border border-black/10 p-3"
-              >
-                <div>
-                  <p className="text-sm font-medium text-black/80">
-                    {characters.find((c) => c.id === s.characterId)?.name}
-                  </p>
-                  <p className="text-xs text-black/40">
-                    {new Date(s.savedAt).toLocaleString()}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleDelete(s.id)}
-                  className="rounded-full px-3 py-1 text-xs text-red-600 hover:bg-red-50"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Scene carousel */}
+      <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Scene">
+        {scenes.map((s) => {
+          const selected = s.id === sceneId;
+          return (
+            <button
+              key={s.id}
+              onClick={() => setSceneId(s.id)}
+              aria-pressed={selected}
+              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border transition-colors ${
+                selected ? "border-coral" : "border-cream/20 hover:border-cream/50"
+              }`}
+            >
+              <Image
+                src={s.src}
+                alt={s.name}
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
+              <span className="absolute inset-x-0 bottom-0 bg-plum-deep/70 px-1 py-0.5 text-[10px] font-semibold text-cream/90">
+                {s.name}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Wardrobe */}
+      <WardrobeGrid key={character.id} character={character} look={looks[character.id]} onSelect={toggleItem} />
+
+      {/* Save */}
+      <button
+        onClick={handleSave}
+        disabled={!hasSelection}
+        className="rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-35"
+      >
+        Save Outfit
+      </button>
+
+      {/* Undo toast */}
+      {pendingDelete ? (
+        <div className="flex items-center justify-between rounded-2xl border border-cream/20 bg-plum px-4 py-3">
+          <p className="text-sm text-cream/85">Outfit deleted</p>
+          <button
+            onClick={handleUndo}
+            className="rounded-full px-3 py-1 text-sm font-bold text-coral hover:bg-coral/10"
+          >
+            Undo
+          </button>
+        </div>
       ) : null}
+
+      {/* Hall of Fame */}
+      <section className="pb-8">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-cream/60">
+          Take a look at all the outfits in the Hall of Fame
+        </h2>
+        {savedLooks.length > 0 ? (
+          <ul className="grid grid-cols-2 gap-3">
+            {savedLooks.map((s) => {
+              const savedScene = sceneById.get(s.sceneId);
+              return (
+                <li key={s.id} className="overflow-hidden rounded-2xl border border-cream/15 bg-plum">
+                  <div className="relative aspect-[3/4] w-full">
+                    {savedScene ? (
+                      <Image
+                        src={savedScene.src}
+                        alt={savedScene.name}
+                        fill
+                        sizes="(max-width: 480px) 45vw, 200px"
+                        className="object-cover"
+                      />
+                    ) : null}
+                    <div className="absolute inset-x-0 bottom-0 bg-plum-deep/80 px-2 py-1.5">
+                      <p className="text-xs font-bold text-cream">{dateTimeFormat.format(s.savedAt)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-2">
+                    <span className="text-[11px] text-cream/60">
+                      {characters.map((c) => c.name).join(" & ")}
+                    </span>
+                    <button
+                      onClick={() => handleDelete(s.id)}
+                      className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-pink-neon hover:bg-pink-neon/10"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="rounded-2xl border border-dashed border-cream/25 p-6 text-center text-sm text-cream/55">
+            No outfits yet — dress the duo and save your first look.
+          </p>
+        )}
+      </section>
     </div>
   );
 }

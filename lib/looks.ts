@@ -1,15 +1,19 @@
-import type { Look, SavedLook } from "@/lib/types";
+import type { CharacterId, Look, SavedLook } from "@/lib/types";
 
 /**
- * Versioned localStorage schema — rule `client-localstorage-schema`.
- * - Key carries a version (`looks:v1`) so future schema changes can migrate,
- *   never collide, and never silently corrupt saved looks.
+ * Versioned localStorage persistence — rule `client-localstorage-schema`.
+ * - Key carries a version (`looks:v2`) so schema changes migrate cleanly.
  * - All reads/writes wrapped in try-catch (localStorage throws in private
  *   browsing, when disabled, or on quota overflow).
- * - Reads cached in memory (rule `js-cache-storage`).
+ * - Reads cached in memory and invalidated on cross-tab `storage` events
+ *   (rule `js-cache-storage`).
+ *
+ * v2 stores a full stage snapshot (both characters + scene). Legacy `looks:v1`
+ * held placeholder color-block looks and is dropped on first load.
  */
 
-const STORAGE_KEY = "looks:v1";
+const STORAGE_KEY = "looks:v2";
+const LEGACY_KEY = "looks:v1";
 
 interface StoredShape {
   looks: Record<string, SavedLook>;
@@ -24,13 +28,16 @@ function defaultValue(): StoredShape {
 
 function readAll(): StoredShape {
   if (cache) return cache;
+  let store = defaultValue();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    cache = raw ? (JSON.parse(raw) as StoredShape) : defaultValue();
+    if (raw) store = JSON.parse(raw) as StoredShape;
+    localStorage.removeItem(LEGACY_KEY); // drop placeholder-era data
   } catch {
-    cache = defaultValue();
+    store = defaultValue();
   }
-  return cache;
+  cache = store;
+  return store;
 }
 
 function writeAll(shape: StoredShape) {
@@ -42,15 +49,13 @@ function writeAll(shape: StoredShape) {
   }
 }
 
-export function saveLook(characterId: string, items: Look): SavedLook {
+export function saveLook(
+  looks: Record<CharacterId, Look>,
+  sceneId: string,
+): SavedLook {
   const shape = readAll();
   const id = String(shape.nextId);
-  const saved: SavedLook = {
-    id,
-    characterId,
-    items,
-    savedAt: Date.now(),
-  };
+  const saved: SavedLook = { id, looks, sceneId, savedAt: Date.now() };
   shape.looks[id] = saved;
   shape.nextId += 1;
   writeAll(shape);
@@ -64,6 +69,15 @@ export function loadLooks(): SavedLook[] {
 export function deleteLook(id: string) {
   const shape = readAll();
   delete shape.looks[id];
+  writeAll(shape);
+}
+
+/** Restore a previously deleted look with its original id (undo). */
+export function restoreLook(saved: SavedLook) {
+  const shape = readAll();
+  shape.looks[saved.id] = saved;
+  const n = Number.parseInt(saved.id, 10);
+  if (!Number.isNaN(n) && n >= shape.nextId) shape.nextId = n + 1;
   writeAll(shape);
 }
 

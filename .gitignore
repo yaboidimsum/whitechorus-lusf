@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# reference source art (masters) — optimized output lives in public/assets/lufs
+/wc-reference/

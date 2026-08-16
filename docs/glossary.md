@@ -5,14 +5,18 @@ new domain concepts appear.
 
 | Term | Definition |
 |------|------------|
-| **White Chorus** | The product: a web dress-up game. |
-| **Clara Friska** | One of the two dressable characters. |
-| **Emir Agung** | The other dressable character. |
-| **Dress-up game** | A game where the player mixes and matches wardrobe items onto a character. |
-| **Character** | A dressable body — Clara Friska or Emir Agung. Has a set of slots. |
-| **Slot** | A body position a wardrobe item occupies: `hair`, `top`, `bottom`, `shoes`, `accessory`. |
-| **Wardrobe item** | A single piece of clothing/accessory that fits one slot. |
-| **Look** | The current selection of wardrobe items on a character (slot id → item id). |
-| **Saved look** | A look persisted to `localStorage` under the versioned `looks:v1` key. |
-| **Layer** | A rendered wardrobe item stacked onto the character canvas (z-order: hair → top → bottom → shoes → accessory). |
-| **Asset** | A layered PNG/SVG image file for a wardrobe item (optional; color placeholder used until assets exist). |
+| **White Chorus** | Indonesian electropop duo — Clara Friska Adinda and Emir Agung Mahendra. |
+| **L.U.S.F.** | *Love Under Flashing Strobe* — the duo's six-track EP and the dress-up site's theme. |
+| **Friska** | Dressable character — Clara Friska Adinda. Asset id `friska`. |
+| **Emir** | Dressable character — Emir Agung Mahendra. Asset id `emir`. |
+| **Dress-up game** | The player mixes and matches wardrobe items onto the two characters and saves the look. |
+| **Character** | A dressable body — Emir or Friska. Has a base body and a set of slots. |
+| **Slot** | A body position a wardrobe layer occupies: `hair`, `top`, `bottom`, `one-piece`, `shoes`, `accessory`. |
+| **Wardrobe item** | A single clothing/accessory layer that fits one slot and one character. |
+| **Look** | The selected wardrobe items for one character (slot id → item id). |
+| **Stage snapshot** | A saved look capturing **both** characters + the scene. |
+| **Saved look** | A stage snapshot persisted to `localStorage` under the versioned `looks:v2` key. |
+| **Layer** | A full-canvas transparent PNG stacked over a character base (`layerOrder`: hair → top → one-piece → bottom → shoes → accessory). |
+| **Scene** | A backdrop behind both characters (e.g. Dance Floor, Stage). |
+| **Hall of Fame** | The saved-looks gallery. |
+| **Asset** | Optimized art under `public/assets/lufs/`; source masters stay in `wc-reference/`. |

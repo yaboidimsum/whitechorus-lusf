@@ -1,28 +1,48 @@
-export type SlotId = "hair" | "top" | "bottom" | "shoes" | "accessory";
+export type CharacterId = "emir" | "friska";
+
+/** Body position a wardrobe layer occupies. */
+export type SlotId =
+  | "hair"
+  | "top"
+  | "bottom"
+  | "one-piece"
+  | "shoes"
+  | "accessory";
 
 export interface Character {
-  id: string;
+  id: CharacterId;
   name: string;
+  fullName: string;
+  /** Transparent base body (hair baked in). Same canvas as its wardrobe layers. */
+  baseSrc: string;
+  /** Slots that actually have wardrobe items for this character. */
   slots: SlotId[];
 }
 
 export interface WardrobeItem {
   id: string;
+  characterId: CharacterId;
   slot: SlotId;
   name: string;
-  /** Path to layered PNG/SVG asset, e.g. `/wardrobe/clara/tops/red-tee.png`.
-   *  Leave undefined until assets exist — the renderer falls back to a color block. */
-  image?: string;
-  /** Placeholder fill while no image asset exists. */
-  color?: string;
+  /** Full-canvas transparent layer, aligned to the character base. */
+  src: string;
+  /** Cropped preview for the wardrobe grid. */
+  thumb: string;
 }
 
-/** Selected item id per slot. Partial — unset slots fall back to the character base. */
+export interface Scene {
+  id: string;
+  name: string;
+  src: string;
+}
+
+/** Selected item id per slot. Partial — unset slots show only the base body. */
 export type Look = Partial<Record<SlotId, string>>;
 
 export interface SavedLook {
   id: string;
-  characterId: string;
-  items: Look;
+  /** Full stage snapshot: both characters + scene. */
+  looks: Record<CharacterId, Look>;
+  sceneId: string;
   savedAt: number;
 }

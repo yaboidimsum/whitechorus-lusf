@@ -1,0 +1,102 @@
+"use client";
+
+import Image from "next/image";
+import { characters, itemById, layerOrder } from "@/data/characters";
+import type { Character, CharacterId, Look, Scene } from "@/lib/types";
+
+interface StageProps {
+  scene: Scene;
+  looks: Record<CharacterId, Look>;
+  activeId: CharacterId;
+}
+
+export default function CharacterStage({ scene, looks, activeId }: StageProps) {
+  return (
+    <section
+      className="relative overflow-hidden rounded-[2rem] border border-cream/15 shadow-stage"
+      aria-label="Dressing room stage"
+    >
+      {/* Scene backdrop */}
+      <div className="relative aspect-[3/4] w-full">
+        <Image
+          src={scene.src}
+          alt={scene.name}
+          fill
+          priority
+          sizes="(max-width: 640px) 100vw, 448px"
+          className="object-cover"
+        />
+        {/* Soft vignette for depth and legibility */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_20%,transparent_55%,rgba(20,8,22,0.55)_100%)]"
+        />
+
+        {/* Both artists, always visible */}
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1 px-2 sm:gap-3">
+          {characters.map((c) => (
+            <CharacterFigure
+              key={c.id}
+              character={c}
+              look={looks[c.id]}
+              active={c.id === activeId}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CharacterFigure({
+  character,
+  look,
+  active,
+}: {
+  character: Character;
+  look: Look;
+  active: boolean;
+}) {
+  const worn = layerOrder
+    .map((slot) => itemById.get(look[slot] ?? ""))
+    .filter((item): item is NonNullable<typeof item> => item?.characterId === character.id);
+
+  const description = `${character.name}${worn.length ? ` wearing ${worn.map((w) => w.name).join(", ")}` : ""}`;
+
+  return (
+    <figure
+      role="img"
+      aria-label={description}
+      className={`relative w-[46%] max-w-[210px] transition-transform duration-300 ${
+        active ? "z-10 -translate-y-1" : "opacity-90"
+      }`}
+    >
+      <div className="relative aspect-[990/1400] w-full">
+        <Image
+          src={character.baseSrc}
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 640px) 46vw, 200px"
+          className="object-contain"
+        />
+        {worn.map((item) => (
+          <Image
+            key={item.id}
+            src={item.src}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 46vw, 200px"
+            className="object-contain"
+          />
+        ))}
+      </div>
+      {active ? (
+        <span
+          aria-hidden
+          className="absolute -inset-1 rounded-2xl border-2 border-coral shadow-[0_0_24px_rgba(255,154,131,0.45)]"
+        />
+      ) : null}
+    </figure>
+  );
+}
