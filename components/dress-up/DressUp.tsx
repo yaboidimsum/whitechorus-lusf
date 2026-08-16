@@ -75,87 +75,95 @@ export default function DressUp() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 lg:max-w-5xl">
       {/* Screen-reader announcements */}
       <p role="status" className="sr-only">
         {announcement}
       </p>
 
-      <CharacterStage scene={scene} looks={looks} activeId={activeId} />
-
-      {/* Character switcher */}
-      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Choose who to dress">
-        {characters.map((c) => {
-          const active = c.id === activeId;
-          return (
-            <button
-              key={c.id}
-              onClick={() => setActiveId(c.id)}
-              aria-pressed={active}
-              className={`rounded-full border px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition-colors ${
-                active
-                  ? "border-coral bg-coral text-plum-deep"
-                  : "border-cream/25 text-cream/85 hover:border-cream/60"
-              }`}
-            >
-              Dress {c.name}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Scene carousel */}
-      <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Scene">
-        {scenes.map((s) => {
-          const selected = s.id === sceneId;
-          return (
-            <button
-              key={s.id}
-              onClick={() => setSceneId(s.id)}
-              aria-pressed={selected}
-              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border transition-colors ${
-                selected ? "border-coral" : "border-cream/20 hover:border-cream/50"
-              }`}
-            >
-              <Image
-                src={s.src}
-                alt={s.name}
-                fill
-                sizes="64px"
-                className="object-cover"
-              />
-              <span className="absolute inset-x-0 bottom-0 bg-plum-deep/70 px-1 py-0.5 text-[10px] font-semibold text-cream/90">
-                {s.name}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Wardrobe */}
-      <WardrobeGrid key={character.id} character={character} look={looks[character.id]} onSelect={toggleItem} />
-
-      {/* Save */}
-      <button
-        onClick={handleSave}
-        disabled={!hasSelection}
-        className="rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
-      >
-        Save Outfit
-      </button>
-
-      {/* Undo toast */}
-      {pendingDelete ? (
-        <div className="animate-enter flex items-center justify-between rounded-2xl border border-cream/20 bg-plum px-4 py-3">
-          <p className="text-sm text-cream/85">Outfit deleted</p>
-          <button
-            onClick={handleUndo}
-            className="rounded-full px-3 py-1 text-sm font-bold text-coral hover:bg-coral/10"
-          >
-            Undo
-          </button>
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start">
+        {/* Stage preview — first on mobile, right column on desktop */}
+        <div className="lg:order-2 lg:sticky lg:top-6 lg:self-start">
+          <CharacterStage scene={scene} looks={looks} activeId={activeId} />
         </div>
-      ) : null}
+
+        {/* Controls — left column on desktop */}
+        <div className="flex flex-col gap-5 lg:order-1">
+          {/* Character switcher */}
+          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Choose who to dress">
+            {characters.map((c) => {
+              const active = c.id === activeId;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setActiveId(c.id)}
+                  aria-pressed={active}
+                  className={`rounded-full border px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition-colors ${
+                    active
+                      ? "border-coral bg-coral text-plum-deep"
+                      : "border-cream/25 text-cream/85 hover:border-cream/60"
+                  }`}
+                >
+                  Dress {c.name}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Scene carousel */}
+          <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Scene">
+            {scenes.map((s) => {
+              const selected = s.id === sceneId;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setSceneId(s.id)}
+                  aria-pressed={selected}
+                  className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border transition-colors ${
+                    selected ? "border-coral" : "border-cream/20 hover:border-cream/50"
+                  }`}
+                >
+                  <Image
+                    src={s.src}
+                    alt={s.name}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                  <span className="absolute inset-x-0 bottom-0 bg-plum-deep/70 px-1 py-0.5 text-[10px] font-semibold text-cream/90">
+                    {s.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Wardrobe */}
+          <WardrobeGrid key={character.id} character={character} look={looks[character.id]} onSelect={toggleItem} />
+
+          {/* Save */}
+          <button
+            onClick={handleSave}
+            disabled={!hasSelection}
+            className="rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
+          >
+            Save Outfit
+          </button>
+
+          {/* Undo toast */}
+          {pendingDelete ? (
+            <div className="animate-enter flex items-center justify-between rounded-2xl border border-cream/20 bg-plum px-4 py-3">
+              <p className="text-sm text-cream/85">Outfit deleted</p>
+              <button
+                onClick={handleUndo}
+                className="rounded-full px-3 py-1 text-sm font-bold text-coral hover:bg-coral/10"
+              >
+                Undo
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
 
       {/* Hall of Fame */}
       <section className="pb-8">
