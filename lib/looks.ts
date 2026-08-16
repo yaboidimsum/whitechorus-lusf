@@ -5,8 +5,8 @@ import type { CharacterId, Look, SavedLook } from "@/lib/types";
  * - Key carries a version (`looks:v2`) so schema changes migrate cleanly.
  * - All reads/writes wrapped in try-catch (localStorage throws in private
  *   browsing, when disabled, or on quota overflow).
- * - Reads cached in memory and invalidated on cross-tab `storage` events
- *   (rule `js-cache-storage`).
+ * - Exposed as an external store (`useSyncExternalStore`) so client-only data
+ *   never diverges from the server render during hydration.
  *
  * v2 stores a full stage snapshot (both characters + scene). Legacy `looks:v1`
  * held placeholder color-block looks and is dropped on first load.
@@ -21,6 +21,8 @@ interface StoredShape {
 }
 
 let cache: StoredShape | null = null;
+let snapshot: SavedLook[] = [];
+const listeners = new Set<() => void>();
 
 function defaultValue(): StoredShape {
   return { looks: {}, nextId: 1 };
@@ -40,13 +42,20 @@ function readAll(): StoredShape {
   return store;
 }
 
+function notify() {
+  snapshot = Object.values(readAll().looks);
+  for (const listener of listeners) listener();
+}
+
 function writeAll(shape: StoredShape) {
   cache = shape;
+  snapshot = Object.values(shape.looks);
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(shape));
   } catch {
     // storage unavailable (incognito/quota) — in-memory state still works for the session
   }
+  for (const listener of listeners) listener();
 }
 
 export function saveLook(
@@ -60,10 +69,6 @@ export function saveLook(
   shape.nextId += 1;
   writeAll(shape);
   return saved;
-}
-
-export function loadLooks(): SavedLook[] {
-  return Object.values(readAll().looks);
 }
 
 export function deleteLook(id: string) {
@@ -81,14 +86,30 @@ export function restoreLook(saved: SavedLook) {
   writeAll(shape);
 }
 
-/** Listen for writes from other tabs and refresh the in-memory cache. */
+/** Client snapshot — referentially stable between changes (for useSyncExternalStore). */
+export function getLooksSnapshot(): SavedLook[] {
+  if (!cache) snapshot = Object.values(readAll().looks);
+  return snapshot;
+}
+
+/** Server / hydration snapshot — empty, since localStorage is client-only. */
+const SERVER_SNAPSHOT: SavedLook[] = [];
+export function getServerLooksSnapshot(): SavedLook[] {
+  return SERVER_SNAPSHOT;
+}
+
+/** Subscribe to look changes (same-tab writes + cross-tab `storage` events). */
 export function subscribeLooks(onChange: () => void) {
-  const handler = (e: StorageEvent) => {
+  listeners.add(onChange);
+  const onStorage = (e: StorageEvent) => {
     if (e.key === STORAGE_KEY) {
       cache = null;
-      onChange();
+      notify();
     }
   };
-  window.addEventListener("storage", handler);
-  return () => window.removeEventListener("storage", handler);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onStorage);
+  };
 }

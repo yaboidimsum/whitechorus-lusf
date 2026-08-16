@@ -1,10 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore, useState } from "react";
 import { sceneById, scenes } from "@/data/assets";
 import { characters } from "@/data/characters";
-import { deleteLook, loadLooks, restoreLook, saveLook, subscribeLooks } from "@/lib/looks";
+import {
+  deleteLook,
+  getLooksSnapshot,
+  getServerLooksSnapshot,
+  restoreLook,
+  saveLook,
+  subscribeLooks,
+} from "@/lib/looks";
 import type { CharacterId, Look, SavedLook, SlotId } from "@/lib/types";
 import CharacterStage from "./CharacterStage";
 import WardrobeGrid from "./WardrobeGrid";
@@ -20,12 +27,15 @@ export default function DressUp() {
   const [activeId, setActiveId] = useState<CharacterId>("emir");
   const [looks, setLooks] = useState<Record<CharacterId, Look>>(emptyLooks);
   const [sceneId, setSceneId] = useState(scenes[0].id);
-  const [savedLooks, setSavedLooks] = useState<SavedLook[]>(() => loadLooks());
+  // Client-only store (localStorage) — server/hydration snapshot is empty,
+  // so the initial render never diverges from the server HTML.
+  const savedLooks = useSyncExternalStore(
+    subscribeLooks,
+    getLooksSnapshot,
+    getServerLooksSnapshot,
+  );
   const [pendingDelete, setPendingDelete] = useState<SavedLook | null>(null);
   const [announcement, setAnnouncement] = useState("");
-
-  // Cross-tab sync (rule `client-localstorage-schema`)
-  useEffect(() => subscribeLooks(() => setSavedLooks(loadLooks())), []);
 
   const scene = sceneById.get(sceneId) ?? scenes[0];
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
@@ -45,8 +55,7 @@ export default function DressUp() {
   };
 
   const handleSave = () => {
-    const saved = saveLook(looks, sceneId);
-    setSavedLooks((prev) => [saved, ...prev]);
+    saveLook(looks, sceneId);
     setAnnouncement("Outfit saved to the Hall of Fame.");
   };
 
@@ -54,7 +63,6 @@ export default function DressUp() {
     const target = savedLooks.find((s) => s.id === id);
     if (!target) return;
     deleteLook(id);
-    setSavedLooks((prev) => prev.filter((s) => s.id !== id));
     setPendingDelete(target);
     setAnnouncement("Outfit deleted.");
   };
@@ -62,7 +70,6 @@ export default function DressUp() {
   const handleUndo = () => {
     if (!pendingDelete) return;
     restoreLook(pendingDelete);
-    setSavedLooks((prev) => [pendingDelete, ...prev]);
     setPendingDelete(null);
     setAnnouncement("Outfit restored.");
   };
