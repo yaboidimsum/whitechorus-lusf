@@ -51,3 +51,4 @@ wc-reference/                     # Source reference art (do not edit)
 - [ADR-0004 localStorage looks](docs/adr/0004-localstorage-looks.md)
 - [ADR-0005 Layered image assets](docs/adr/0005-layered-image-assets.md) (superseded)
 - [ADR-0007 L.U.S.F. asset pipeline](docs/adr/0007-lufs-asset-pipeline.md)
+# whitechorus-lusf
