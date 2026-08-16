@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { characters, itemById, layerOrder } from "@/data/characters";
+import { characters, itemById, itemsFor, layerOrder } from "@/data/characters";
 import type { Character, CharacterId, Look, Scene } from "@/lib/types";
 
 interface StageProps {
@@ -80,16 +80,26 @@ function CharacterFigure({
           sizes="(max-width: 640px) 65vw, 480px"
           className="object-contain"
         />
-        {worn.map((item) => (
-          <Image
-            key={item.id}
-            src={item.src}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 65vw, 480px"
-            className="object-contain"
-          />
-        ))}
+        {/* Wardrobe — all layers rendered and cached, visibility toggled by
+            opacity. Switching clothes is a pure opacity crossfade: no on-demand
+            network fetch, no hard cut (fixes the first-click glitch). */}
+        {layerOrder.map((slot) =>
+          itemsFor(character.id, slot).map((item) => {
+            const selected = look[slot] === item.id;
+            return (
+              <Image
+                key={item.id}
+                src={item.src}
+                alt=""
+                fill
+                sizes="(max-width: 640px) 65vw, 480px"
+                className={`object-contain transition-opacity duration-150 ease-out-quart ${
+                  selected ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            );
+          }),
+        )}
       </div>
       {active ? (
         <span
