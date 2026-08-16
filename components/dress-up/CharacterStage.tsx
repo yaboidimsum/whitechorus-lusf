@@ -17,7 +17,7 @@ export default function CharacterStage({ scene, looks, activeId }: StageProps) {
       aria-label="Dressing room stage"
     >
       {/* Scene backdrop */}
-      <div className="relative aspect-[3/4] w-full">
+      <div className="relative aspect-[4/5] w-full">
         <Image
           src={scene.src}
           alt={scene.name}
@@ -67,7 +67,7 @@ function CharacterFigure({
     <figure
       role="img"
       aria-label={description}
-      className={`relative w-[55%] max-w-[400px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
+      className={`relative w-[65%] max-w-[480px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
         active ? "z-10 -translate-y-1" : "opacity-90"
       }`}
     >
@@ -77,7 +77,7 @@ function CharacterFigure({
           alt=""
           fill
           priority
-          sizes="(max-width: 640px) 55vw, 400px"
+          sizes="(max-width: 640px) 65vw, 480px"
           className="object-contain"
         />
         {worn.map((item) => (
@@ -86,7 +86,7 @@ function CharacterFigure({
             src={item.src}
             alt=""
             fill
-            sizes="(max-width: 640px) 55vw, 400px"
+            sizes="(max-width: 640px) 65vw, 480px"
             className="object-contain"
           />
         ))}
