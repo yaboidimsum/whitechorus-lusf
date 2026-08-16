@@ -12,7 +12,6 @@ const bebas = Bebas_Neue({
 
 const nunito = Nunito_Sans({
   variable: "--font-body",
-  weight: ["400", "600", "700", "800"],
   subsets: ["latin"],
 });
 
@@ -44,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             pointer-events are disabled (ui-polish). */}
         <div
           aria-hidden
-          className="pointer-events-none fixed -inset-6 -z-10 bg-[url('/assets/lufs/background/lufs-cover.jpg')] bg-cover bg-center blur-[6px]"
+          className="pointer-events-none fixed -inset-6 -z-10 bg-[url('/assets/lufs/background/lufs-cover-sm.jpg')] bg-cover bg-center blur-[6px]"
         />
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-plum-deep/70" />
         {children}

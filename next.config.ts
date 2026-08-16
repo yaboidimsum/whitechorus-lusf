@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
   /* Turbopack is the default bundler in Next 16 — faster builds & HMR.
      Infer side-effect-free modules for better tree shaking. */
   experimental: {
-    optimizePackageImports: ["lucide-react", "date-fns"],
     turbopackInferModuleSideEffects: true,
   },
 };
