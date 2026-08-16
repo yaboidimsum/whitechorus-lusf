@@ -32,11 +32,16 @@
 }
 
 html {
+  /* Dark fallback behind the blurred cover backdrop — prevents a white flash
+     and fills any gap the fixed backdrop layer doesn't cover. */
+  background: var(--background);
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
+  /* Transparent so the fixed -z backdrop (blurred L.U.S.F. cover) shows through.
+     Readability comes from the overlay wash on the backdrop layer itself. */
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
 }

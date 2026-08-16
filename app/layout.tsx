@@ -39,6 +39,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        {/* Blurred L.U.S.F. cover backdrop + plum wash for legibility.
+            Fixed and -z-10 so in-flow content paints above it. */}
+        <div
+          aria-hidden
+          className="fixed -inset-6 -z-10 bg-[url('/assets/lufs/background/lufs-cover.jpg')] bg-cover bg-center blur-[6px]"
+        />
+        <div aria-hidden className="fixed inset-0 -z-10 bg-plum-deep/70" />
         {children}
       </body>
     </html>
