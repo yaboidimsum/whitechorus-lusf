@@ -67,7 +67,7 @@ function CharacterFigure({
     <figure
       role="img"
       aria-label={description}
-      className={`relative w-[46%] max-w-[210px] transition-transform duration-300 ${
+      className={`relative w-[46%] max-w-[210px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
         active ? "z-10 -translate-y-1" : "opacity-90"
       }`}
     >
@@ -94,7 +94,7 @@ function CharacterFigure({
       {active ? (
         <span
           aria-hidden
-          className="absolute -inset-1 rounded-2xl border-2 border-coral shadow-[0_0_24px_rgba(255,154,131,0.45)]"
+          className="absolute -inset-1 rounded-2xl border-2 border-coral shadow-[0_0_24px_rgba(255,154,131,0.45)] transition-[opacity,transform] duration-200 ease-out-quart"
         />
       ) : null}
     </figure>

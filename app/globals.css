@@ -29,6 +29,8 @@
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --shadow-stage: var(--shadow-stage);
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 html {
@@ -46,6 +48,26 @@ body {
   font-family: var(--font-body), system-ui, sans-serif;
 }
 
+/* One-shot entrance for conditionally-mounted elements (toast).
+   Lives in @layer components so the unlayered reduced-motion rule above
+   (animation:none) outranks it — the toast is disabled under reduced motion. */
+@layer components {
+  @keyframes enter-from-below {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-enter {
+    animation: enter-from-below 200ms var(--ease-out-quart);
+  }
+}
+
 /* Visible keyboard focus everywhere */
 :focus-visible {
   outline: 2px solid var(--color-coral);
@@ -56,13 +78,14 @@ button {
   touch-action: manipulation;
 }
 
-/* Reduced motion */
+/* Reduced motion — no `!important`. This is unlayered CSS, so it outranks
+   Tailwind's `@layer utilities` regardless of specificity. Disable animation
+   entirely rather than leaving a near-zero duration. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation: none;
+    transition: none;
   }
 }

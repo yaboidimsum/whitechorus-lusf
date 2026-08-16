@@ -139,14 +139,14 @@ export default function DressUp() {
       <button
         onClick={handleSave}
         disabled={!hasSelection}
-        className="rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-35"
+        className="rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
       >
         Save Outfit
       </button>
 
       {/* Undo toast */}
       {pendingDelete ? (
-        <div className="flex items-center justify-between rounded-2xl border border-cream/20 bg-plum px-4 py-3">
+        <div className="animate-enter flex items-center justify-between rounded-2xl border border-cream/20 bg-plum px-4 py-3">
           <p className="text-sm text-cream/85">Outfit deleted</p>
           <button
             onClick={handleUndo}
