@@ -76,7 +76,7 @@ export default function DressUp() {
                     key={c.id}
                     onClick={() => setActiveId(c.id)}
                     aria-pressed={active}
-                    className={`rounded-full border px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition-colors ${
+                    className={`rounded-full border px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.97] ${
                       active
                         ? "border-coral bg-coral text-plum-deep"
                         : "border-cream/25 text-cream/85 hover:border-cream/60"
@@ -97,7 +97,7 @@ export default function DressUp() {
                     key={s.id}
                     onClick={() => setSceneId(s.id)}
                     aria-pressed={selected}
-                    className={`relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-2xl border transition-colors ${
+                    className={`relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-2xl border transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.96] ${
                       selected ? "border-coral" : "border-cream/20 hover:border-cream/50"
                     }`}
                   >

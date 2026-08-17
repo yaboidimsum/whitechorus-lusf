@@ -37,7 +37,7 @@ export default function DspLinks() {
             rel="noopener noreferrer"
             aria-label={`Listen to Melayang on ${p.name}`}
             title={`Listen to Melayang on ${p.name}`}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-cream/20 text-cream/85 transition-colors hover:border-coral hover:text-coral active:scale-95"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-cream/20 text-cream/85 transition-[transform,colors] duration-150 ease-out-quart hover:border-coral hover:text-coral active:scale-95"
           >
             <svg
               viewBox="0 0 24 24"

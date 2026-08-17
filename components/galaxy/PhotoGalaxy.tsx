@@ -42,6 +42,7 @@ export default function PhotoGalaxy({ className = "" }: { className?: string }) 
       wrap.style.border = "1px solid rgba(255,255,255,0.18)";
       wrap.style.boxShadow = "0 10px 24px rgba(0,0,0,0.35)";
       wrap.style.pointerEvents = "none";
+      wrap.style.willChange = "transform";
 
       const img = document.createElement("img");
       img.src = PHOTOS[i % PHOTOS.length];

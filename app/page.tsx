@@ -20,7 +20,7 @@ export default function Home() {
       id="main"
       className="flex-1"
     >
-      <header className="mx-auto flex max-w-2xl flex-col items-center text-center lg:max-w-5xl">
+      <header className="animate-rise mx-auto flex max-w-2xl flex-col items-center text-center lg:max-w-5xl">
         <div className="flex items-center justify-center gap-5 sm:gap-7">
           <Image
             src="/white-chorus-logo.png"

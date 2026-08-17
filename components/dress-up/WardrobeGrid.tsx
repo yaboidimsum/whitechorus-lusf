@@ -30,7 +30,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               key={slot}
               aria-pressed={selected}
               onClick={() => setActiveSlot(slot)}
-              className={`min-h-[44px] shrink-0 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-colors ${
+              className={`min-h-[44px] shrink-0 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.97] ${
                 selected
                   ? "border-coral bg-coral text-plum-deep"
                   : "border-cream/25 text-cream/80 hover:border-cream/60"
@@ -51,7 +51,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               key={item.id}
               onClick={() => onSelect(item.slot, item.id)}
               aria-pressed={selected}
-              className={`group relative rounded-2xl border p-1 transition-colors ${
+              className={`group relative rounded-2xl border p-1 transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.96] ${
                 selected
                   ? "border-coral bg-coral/10"
                   : "border-cream/15 bg-plum hover:border-cream/40"
@@ -76,7 +76,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               {selected ? (
                 <span
                   aria-hidden
-                  className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-coral text-[11px] font-bold text-plum-deep"
+                  className="animate-enter absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-coral text-[11px] font-bold text-plum-deep"
                 >
                   ✓
                 </span>

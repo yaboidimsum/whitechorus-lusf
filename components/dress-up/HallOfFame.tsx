@@ -70,7 +70,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
       ) : null}
       <div className="flex items-center justify-between gap-2 p-2">
         <div className="min-w-0">
-          <p className="truncate text-xs font-bold text-cream">
+          <p className="truncate text-xs font-bold text-cream tabular-nums">
             {dateTimeFormat.format(s.savedAt)}
           </p>
           <p className="text-xs text-cream/60">
@@ -79,7 +79,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
         </div>
         <button
           onClick={() => handleDelete(s.id)}
-          className="flex min-h-[44px] shrink-0 items-center rounded-full px-3.5 text-xs font-semibold text-pink-neon transition-colors hover:bg-pink-neon/10"
+          className="flex min-h-[44px] shrink-0 items-center rounded-full px-3.5 text-xs font-semibold text-pink-neon transition-[transform,colors] duration-150 ease-out-quart hover:bg-pink-neon/10 active:scale-[0.95]"
         >
           Delete
         </button>
@@ -133,7 +133,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
                   <button
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={safePage === 0}
-                    className="rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream/80 transition-colors hover:border-cream/50 disabled:cursor-not-allowed disabled:opacity-35"
+                    className="rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream/80 transition-[transform,colors] duration-150 ease-out-quart hover:border-cream/50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
                   >
                     Prev
                   </button>
@@ -143,7 +143,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                     disabled={safePage === totalPages - 1}
-                    className="rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream/80 transition-colors hover:border-cream/50 disabled:cursor-not-allowed disabled:opacity-35"
+                    className="rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream/80 transition-[transform,colors] duration-150 ease-out-quart hover:border-cream/50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
                   >
                     Next
                   </button>
