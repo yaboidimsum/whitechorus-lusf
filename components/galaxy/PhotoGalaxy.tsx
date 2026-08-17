@@ -3,7 +3,13 @@
 import { useEffect, useRef } from "react";
 import { ImageGalaxy } from "./image-galaxy";
 
-const PHOTOS = ["/photograph-1.jpg", "/photograph-2.jpg", "/photograph-3.jpg"];
+const PHOTOS = [
+  "/photograph-1.jpg",
+  "/photograph-2.jpg",
+  "/photograph-3.jpg",
+  "/photograph-4.png",
+  "/photograph-5.png",
+];
 
 /** Number of drifting photo particles (the 3 photos repeat). */
 const COUNT = 12;

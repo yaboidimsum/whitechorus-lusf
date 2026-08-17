@@ -6,6 +6,14 @@ import PhotoGalaxy from "@/components/galaxy/PhotoGalaxy";
 import { branding } from "@/data/assets";
 import { characters } from "@/data/characters";
 
+/** Square album-cover strip in The Duo section. */
+const ALBUMS = [
+  { src: "/album-1.png", alt: "Fast Food album cover" },
+  { src: "/album-2.png", alt: "Limbo album cover" },
+  { src: "/album-3.png", alt: "Minggu Live Art JKT album cover" },
+  { src: "/album-4.png", alt: "Electro-pop album cover" },
+];
+
 export default function Home() {
   return (
     <main
@@ -72,6 +80,23 @@ export default function Home() {
                     {c.name}
                   </h3>
                   <p className="mt-1.5 text-sm text-cream/75">{c.fullName}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Album covers — square */}
+          <div className="mx-auto mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
+            {ALBUMS.map((a) => (
+              <div key={a.src} className="overflow-hidden rounded-2xl border border-cream/15 bg-plum">
+                <div className="relative aspect-square w-full">
+                  <Image
+                    src={a.src}
+                    alt={a.alt}
+                    fill
+                    sizes="(max-width: 480px) 45vw, 220px"
+                    className="object-cover"
+                  />
                 </div>
               </div>
             ))}
