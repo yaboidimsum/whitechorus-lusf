@@ -40,7 +40,7 @@ export default function DressUp() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full py-12 sm:py-16">
       {/* Screen-reader announcements */}
       <p role="status" className="sr-only">
         {announcement}
