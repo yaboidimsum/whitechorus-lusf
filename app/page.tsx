@@ -57,7 +57,7 @@ export default function Home() {
       <section className="relative overflow-hidden border-t border-cream/10 bg-plum-deep/40 py-12 sm:py-16">
         <PhotoGalaxy />
         <div aria-hidden className="absolute inset-0 bg-plum-deep/60" />
-        <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-5xl">
+        <div className="relative z-10 mx-auto w-full">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               White Chorus
@@ -71,7 +71,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-6 shadow-stage backdrop-blur sm:p-8">
+          <div className="mx-auto mt-10 w-full max-w-5xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-6 shadow-stage backdrop-blur sm:p-8">
             <div className="grid items-center gap-8 sm:grid-cols-2">
               {/* duo photo */}
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-cream/15">
@@ -116,7 +116,7 @@ export default function Home() {
 
       {/* L.U.S.F. — the new EP */}
       <section className="border-t border-cream/10 bg-plum/40 py-12 sm:py-16">
-        <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
+        <div className="mx-auto w-full">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               White Chorus · EP.
@@ -130,7 +130,7 @@ export default function Home() {
           </div>
 
           {/* Lead single */}
-          <div className="mx-auto mt-10 max-w-xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
+          <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
             <YouTubeEmbed
               videoid="MI_Kvwd7zLA"
               playlabel="Play Melayang by White Chorus"
@@ -141,7 +141,7 @@ export default function Home() {
           </p>
 
           {/* Tracklist */}
-          <div className="mx-auto mt-10 max-w-lg border-y border-cream/10">
+          <div className="mx-auto mt-10 max-w-2xl border-y border-cream/10">
             <div className="flex items-baseline justify-between gap-4 py-3.5">
               <span className="font-display text-xl uppercase leading-none tracking-wide text-coral">
                 Melayang
