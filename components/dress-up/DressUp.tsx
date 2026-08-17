@@ -52,7 +52,7 @@ export default function DressUp() {
   };
 
   return (
-    <div className="w-full py-12 sm:py-16">
+    <div className="w-full px-4 py-8 sm:px-6 sm:py-16">
       {/* Screen-reader announcements */}
       <p role="status" className="sr-only">
         {announcement}
@@ -76,7 +76,7 @@ export default function DressUp() {
                     key={c.id}
                     onClick={() => setActiveId(c.id)}
                     aria-pressed={active}
-                    className={`rounded-full border px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.97] ${
+                    className={`rounded-full border px-3 py-2.5 text-xs font-bold uppercase tracking-[0.12em] transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.97] sm:px-4 sm:py-3 sm:text-sm ${
                       active
                         ? "border-coral bg-coral text-plum-deep"
                         : "border-cream/25 text-cream/85 hover:border-cream/60"
@@ -89,7 +89,7 @@ export default function DressUp() {
             </div>
 
             {/* Scene carousel */}
-            <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Scene">
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0" role="group" aria-label="Scene">
               {scenes.map((s) => {
                 const selected = s.id === sceneId;
                 return (
@@ -120,17 +120,17 @@ export default function DressUp() {
             <WardrobeGrid key={character.id} character={character} look={looks[character.id]} onSelect={toggleItem} />
 
             {/* Actions */}
-            <div className="grid grid-cols-2 gap-3 mt-1">
+            <div className="mt-1 grid grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 onClick={handleSave}
                 disabled={!mounted || !hasSelection || saving}
-                className="rounded-full bg-coral px-5 py-3.5 text-center text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
+                className="rounded-full bg-coral px-3.5 py-3 text-center text-xs font-extrabold uppercase tracking-[0.12em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100 sm:px-5 sm:py-3.5 sm:text-sm sm:tracking-[0.14em]"
               >
                 {saving ? "Saving..." : "Save Outfit"}
               </button>
               <Link
                 href="/hall-of-fame"
-                className="flex items-center justify-center rounded-full border border-cream/25 bg-transparent px-5 py-3.5 text-center text-sm font-extrabold uppercase tracking-[0.14em] text-cream transition-colors duration-150 ease-out-quart hover:border-cream/60 hover:bg-cream/5 active:scale-[0.97]"
+                className="flex items-center justify-center rounded-full border border-cream/25 bg-transparent px-3.5 py-3 text-center text-xs font-extrabold uppercase tracking-[0.12em] text-cream transition-colors duration-150 ease-out-quart hover:border-cream/60 hover:bg-cream/5 active:scale-[0.97] sm:px-5 sm:py-3.5 sm:text-sm sm:tracking-[0.14em]"
               >
                 Hall of Fame
               </Link>

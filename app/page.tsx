@@ -20,8 +20,8 @@ export default function Home() {
       id="main"
       className="flex-1"
     >
-      <header className="animate-rise mx-auto flex max-w-2xl flex-col items-center text-center lg:max-w-5xl">
-        <div className="flex items-center justify-center gap-5 sm:gap-7">
+      <header className="animate-rise mx-auto flex max-w-2xl flex-col items-center text-center px-4 pt-6 sm:px-6 sm:pt-10 lg:max-w-5xl">
+        <div className="flex items-center justify-center gap-4 sm:gap-7">
           <Image
             src="/white-chorus-logo.png"
             alt="White Chorus"
@@ -36,13 +36,13 @@ export default function Home() {
             width={200}
             height={200}
             priority
-            className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)] w-auto h-10 sm:h-60"
+            className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)] w-auto h-32 sm:h-60"
           />
         </div>
         <p className="mt-2 text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
           White Chorus · L.U.F.S.
         </p>
-        <h1 className="font-display mt-1 text-4xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl text-balance">
+        <h1 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl text-balance">
           Dress for the afterglow
         </h1>
         <p className="mt-3 max-w-sm text-pretty text-sm text-cream/65">
@@ -57,7 +57,7 @@ export default function Home() {
       <section className="relative overflow-hidden border-t border-cream/10 bg-plum-deep/40 py-12 sm:py-16">
         <PhotoGalaxy />
         <div aria-hidden className="absolute inset-0 bg-plum-deep/60" />
-        <div className="relative z-10 mx-auto w-full">
+        <div className="relative z-10 mx-auto w-full px-4 sm:px-6">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               White Chorus
@@ -71,10 +71,10 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 w-full max-w-5xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-6 shadow-stage backdrop-blur sm:p-8">
-            <div className="grid items-center gap-8 sm:grid-cols-2">
+          <div className="mx-auto mt-8 w-full max-w-5xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-5 shadow-stage backdrop-blur sm:mt-10 sm:p-8">
+            <div className="grid items-center gap-6 sm:grid-cols-2 sm:gap-8">
               {/* duo photo */}
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-cream/15">
+              <div className="relative aspect-[3/4] w-full max-w-xs mx-auto sm:max-w-none overflow-hidden rounded-xl border border-cream/15">
                 <Image
                   src="/photograph-1.jpg"
                   alt="White Chorus — Clara Friska Adinda and Emir Agung Mahendra"
@@ -116,7 +116,7 @@ export default function Home() {
 
       {/* L.U.F.S. — the new EP */}
       <section className="border-t border-cream/10 bg-plum/40 py-12 sm:py-16">
-        <div className="mx-auto w-full">
+        <div className="mx-auto w-full px-4 sm:px-6">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               White Chorus · EP.
@@ -130,7 +130,7 @@ export default function Home() {
           </div>
 
           {/* Lead single */}
-          <div className="ep-video-frame mx-auto mt-10 aspect-video w-full max-w-3xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
+          <div className="ep-video-frame mx-auto mt-8 aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-coral/30 shadow-stage sm:mt-10 sm:rounded-[2rem]">
             <YouTubeEmbed
               videoid="MI_Kvwd7zLA"
               playlabel="Play Melayang by White Chorus"

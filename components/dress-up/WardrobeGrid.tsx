@@ -43,7 +43,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
       </div>
 
       {/* Item grid */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {options.map((item) => {
           const selected = look[item.slot] === item.id;
           return (

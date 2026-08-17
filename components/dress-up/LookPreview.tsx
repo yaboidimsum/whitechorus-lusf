@@ -16,7 +16,7 @@ export default function LookPreview({ look }: { look: SavedLook }) {
           src={scene.src}
           alt={scene.name}
           fill
-          sizes="(max-width: 480px) 45vw, 200px"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
           className="object-cover"
         />
       ) : null}
@@ -47,7 +47,7 @@ export default function LookPreview({ look }: { look: SavedLook }) {
                   src={c.baseSrc}
                   alt=""
                   fill
-                  sizes="(max-width: 480px) 45vw, 200px"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
                   className="object-contain"
                 />
                 {worn.map((item) => (
@@ -56,7 +56,7 @@ export default function LookPreview({ look }: { look: SavedLook }) {
                     src={item.src}
                     alt=""
                     fill
-                    sizes="(max-width: 480px) 45vw, 200px"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
                     className="object-contain"
                   />
                 ))}

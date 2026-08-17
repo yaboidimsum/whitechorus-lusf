@@ -68,18 +68,18 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
           Example
         </span>
       ) : null}
-      <div className="flex items-center justify-between gap-2 p-2">
+      <div className="flex flex-col gap-1 p-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:p-2.5">
         <div className="min-w-0">
           <p className="truncate text-xs font-bold text-cream tabular-nums">
             {dateTimeFormat.format(s.savedAt)}
           </p>
-          <p className="text-xs text-cream/60">
+          <p className="text-[11px] text-cream/60 sm:text-xs">
             {characters.map((c) => c.name).join(" & ")}
           </p>
         </div>
         <button
           onClick={() => handleDelete(s.id)}
-          className="flex min-h-[44px] shrink-0 items-center rounded-full px-3.5 text-xs font-semibold text-pink-neon transition-[transform,colors] duration-150 ease-out-quart hover:bg-pink-neon/10 active:scale-[0.95]"
+          className="flex min-h-[36px] items-center justify-center rounded-full px-2.5 text-xs font-semibold text-pink-neon transition-[transform,colors] duration-150 ease-out-quart hover:bg-pink-neon/10 active:scale-[0.95] sm:min-h-[44px] sm:px-3.5"
         >
           Delete
         </button>

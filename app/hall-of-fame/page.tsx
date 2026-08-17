@@ -2,7 +2,7 @@ import HallOfFame from "@/components/dress-up/HallOfFame";
 
 export default function HallOfFamePage() {
   return (
-    <main id="main" className="flex-1 px-4 py-10 sm:px-6">
+    <main id="main" className="flex-1 px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-8 text-center">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
