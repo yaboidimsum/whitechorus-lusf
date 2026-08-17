@@ -119,7 +119,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
-              New EP
+              White Chorus · L.U.S.F.
             </p>
             <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
               Love Under Flashing Strobe
@@ -129,6 +129,18 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Lead single */}
+          <div className="mx-auto mt-10 max-w-xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
+            <YouTubeEmbed
+              videoid="MI_Kvwd7zLA"
+              playlabel="Play Melayang by White Chorus"
+            />
+          </div>
+          <p className="mt-3 text-center text-xs uppercase tracking-[0.14em] text-cream/60">
+            Melayang — an anthem for the ones lost in Jakarta&rsquo;s night
+          </p>
+
+          {/* Tracklist */}
           <div className="mx-auto mt-8 max-w-lg border-y border-cream/10">
             <div className="flex items-baseline justify-between gap-4 py-3.5">
               <span className="font-display text-xl uppercase leading-none tracking-wide text-coral">
@@ -144,28 +156,6 @@ export default function Home() {
           </div>
 
           <DspLinks />
-        </div>
-      </section>
-
-      {/* Melayang — lead single */}
-      <section className="border-y border-cream/10 bg-plum-deep/40 py-20 sm:py-24">
-        <div className="mx-auto w-full max-w-2xl text-center lg:max-w-5xl">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
-            White Chorus · Melayang
-          </p>
-          <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
-            An anthem for the ones lost in Jakarta&rsquo;s night
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/65">
-            The lead single from L.U.S.F. — trip-hop and nostalgic pop for the
-            afterglow.
-          </p>
-          <div className="mx-auto mt-8 max-w-xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
-            <YouTubeEmbed
-              videoid="MI_Kvwd7zLA"
-              playlabel="Play Melayang by White Chorus"
-            />
-          </div>
         </div>
       </section>
     </main>
