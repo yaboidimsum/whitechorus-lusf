@@ -119,7 +119,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
-              White Chorus · L.U.S.F.
+              White Chorus · EP.
             </p>
             <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
               Love Under Flashing Strobe
