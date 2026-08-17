@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Nunito_Sans } from "next/font/google";
-import { DiaGradient } from "@/components/dia-gradient/DiaGradient";
 import "./globals.css";
 
 // Module-level font config — loaded once, preloaded by Next (rule `server-hoist-static-io`).
@@ -54,9 +53,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </p>
         </footer>
         {/* Bottom glow — White Chorus Dia gradient, rises from the floor */}
-        <div aria-hidden className="pointer-events-none h-[45vh] w-full overflow-hidden">
+        {/* <div aria-hidden className="pointer-events-none h-[45vh] w-full overflow-hidden">
           <DiaGradient />
-        </div>
+        </div> */}
       </body>
     </html>
   );
