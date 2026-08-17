@@ -58,10 +58,10 @@ export default function Home() {
             className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)] w-auto h-32 sm:h-60"
           />
         </div>
-        <p className="mt-2 text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
+        <p className="mt-2 text-xs font-bold tracking-[0.01em] text-pink-neon">
           White Chorus · L.U.F.S.
         </p>
-        <h1 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl text-balance">
+        <h1 className="font-display mt-1 text-3xl font-normal leading-none tracking-wide text-cream sm:text-5xl text-balance">
           Dress for the afterglow
         </h1>
         <p className="mt-3 max-w-sm text-pretty text-sm text-cream/65">
@@ -78,10 +78,10 @@ export default function Home() {
         <div aria-hidden className="absolute inset-0 bg-plum-deep/60" />
         <div className="relative z-10 mx-auto w-full px-4 sm:px-6">
           <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
+            <p className="text-xs font-bold tracking-[0.01em] text-pink-neon">
               White Chorus
             </p>
-            <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
+            <h2 className="font-display mt-1 text-3xl font-normal leading-none tracking-wide text-cream text-balance sm:text-4xl">
               The duo
             </h2>
             <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/75">
@@ -90,7 +90,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mx-auto mt-8 w-full max-w-5xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-5 shadow-stage backdrop-blur sm:mt-10 sm:p-8">
+          <div className="mx-auto mt-8 w-full max-w-5xl rounded-[2rem] border border-cream/15 bg-plum-deep/75 p-5 shadow-stage backdrop-blur sm:mt-10 sm:p-8">
             {/* 3D Coverflow Carousel with Photograph 1-3 */}
             <div className="w-full">
               <CoverflowCarousel
@@ -106,7 +106,7 @@ export default function Home() {
             <div className="mt-8 border-t border-cream/10 pt-8 sm:mt-10">
               <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
                 <div>
-                  <h3 className="font-display text-2xl uppercase leading-none tracking-wide text-coral sm:text-3xl">
+                  <h3 className="font-display text-2xl leading-none tracking-wide text-coral sm:text-3xl">
                     About White Chorus
                   </h3>
                   <p className="mt-3 text-sm leading-relaxed text-cream/85">
@@ -119,7 +119,7 @@ export default function Home() {
                     if (!c) return null;
                     return (
                       <div key={c.id}>
-                        <h4 className="font-display text-xl uppercase leading-none tracking-wide text-cream">
+                        <h4 className="font-display text-xl leading-none tracking-wide text-cream">
                           {c.name}
                         </h4>
                         <p className="mt-1 text-xs text-cream/60">
@@ -142,39 +142,39 @@ export default function Home() {
       <section className="border-t border-cream/10 bg-plum/40 py-12 sm:py-16">
         <div className="mx-auto w-full px-4 sm:px-6">
           <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
+            <p className="text-xs font-bold tracking-[0.01em] text-pink-neon">
               White Chorus · EP.
             </p>
-            <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
+            <h2 className="font-display mt-1 text-3xl font-normal leading-none tracking-wide text-cream text-balance sm:text-4xl">
               Love Under Flashing Strobe
             </h2>
             <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/75">
-              Six tracks of cinta under the strobe. Out September 2, 2026.
+              Six tracks. Out September 2, 2026.
             </p>
           </div>
 
           {/* Lead single */}
-          <div className="ep-video-frame mx-auto mt-8 aspect-video w-full max-w-5xl overflow-hidden rounded-2xl border border-coral/30 shadow-stage sm:mt-10 sm:rounded-[2rem]">
+          <div className="ep-video-frame mx-auto mt-8 aspect-video w-full max-w-5xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage sm:mt-10 sm:rounded-[2rem]">
             <YouTubeEmbed
               videoid="MI_Kvwd7zLA"
               playlabel="Play Melayang by White Chorus"
             />
           </div>
-          <p className="mt-3 text-center text-xs uppercase tracking-[0.14em] text-cream/60">
+          <p className="mt-3 text-center text-xs tracking-[0.05em] text-cream/60">
             Melayang — an anthem for the ones lost in Jakarta&rsquo;s night
           </p>
 
           {/* Tracklist */}
           <div className="mx-auto mt-10 max-w-2xl border-y border-cream/10">
             <div className="flex items-baseline justify-between gap-4 py-3.5">
-              <span className="font-display text-xl uppercase leading-none tracking-wide text-coral">
+              <span className="font-display text-xl leading-none tracking-wide text-coral">
                 Melayang
               </span>
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-cream/60">
+              <span className="text-xs font-semibold tracking-[0.14em] text-cream/60">
                 Lead single · out now
               </span>
             </div>
-            <div className="border-t border-cream/10 py-3.5 text-center text-xs uppercase tracking-[0.14em] text-cream/50">
+            <div className="border-t border-cream/10 py-3.5 text-center text-xs tracking-[0.14em] text-cream/50">
               Five more tracks, September 2
             </div>
           </div>

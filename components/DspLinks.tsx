@@ -25,7 +25,7 @@ const PLATFORMS = [
 export default function DspLinks() {
   return (
     <div className="mt-8">
-      <p className="text-center text-xs font-semibold uppercase tracking-[0.16em] text-cream/60">
+      <p className="text-center text-xs font-semibold tracking-[0.05em] text-cream/60">
         Listen to Melayang on your platform
       </p>
       <div className="mt-4 flex items-center justify-center gap-3">
