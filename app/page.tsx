@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { YouTubeEmbed } from "@next/third-parties/google";
 import DressUp from "@/components/dress-up/DressUp";
+import DspLinks from "@/components/DspLinks";
 import PhotoGalaxy from "@/components/galaxy/PhotoGalaxy";
 import { branding } from "@/data/assets";
 import { characters } from "@/data/characters";
@@ -107,16 +108,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 text-center">
-            <a
-              href="https://youtu.be/MI_Kvwd7zLA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block rounded-full bg-coral px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97]"
-            >
-              Listen to Melayang
-            </a>
-          </div>
+          <DspLinks />
         </div>
       </section>
 
