@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { ImageGalaxy } from "./image-galaxy";
 
 const PHOTOS = [
-  "/photograph-1.jpg",
   "/photograph-2.jpg",
   "/photograph-3.jpg",
   "/photograph-4.png",

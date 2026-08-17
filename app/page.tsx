@@ -70,40 +70,42 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-3xl items-center gap-8 sm:grid-cols-2">
-            {/* duo photo */}
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-cream/15 bg-plum">
-              <Image
-                src="/photograph-1.jpg"
-                alt="White Chorus — Clara Friska Adinda and Emir Agung Mahendra"
-                fill
-                sizes="(max-width: 640px) 90vw, 400px"
-                className="object-cover"
-              />
-            </div>
+          <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-6 shadow-stage backdrop-blur sm:p-8">
+            <div className="grid items-center gap-8 sm:grid-cols-2">
+              {/* duo photo */}
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-cream/15">
+                <Image
+                  src="/photograph-1.jpg"
+                  alt="White Chorus — Clara Friska Adinda and Emir Agung Mahendra"
+                  fill
+                  sizes="(max-width: 640px) 90vw, 400px"
+                  className="object-cover"
+                />
+              </div>
 
-            {/* who they are */}
-            <div>
-              <p className="text-sm leading-relaxed text-cream/80">
-                White Chorus is an Indonesian electropop duo — Clara Friska
-                Adinda and Emir Agung Mahendra. Their sound weaves trip-hop,
-                dark electronics, and nostalgic pop, written for the late-night
-                streets of Jakarta.
-              </p>
-              <div className="mt-6 space-y-5">
-                {DUO_ORDER.map((id) => {
-                  const c = characters.find((x) => x.id === id);
-                  if (!c) return null;
-                  return (
-                    <div key={c.id}>
-                      <h3 className="font-display text-xl uppercase leading-none tracking-wide text-cream">
-                        {c.name}
-                      </h3>
-                      <p className="mt-1 text-xs text-cream/60">{c.fullName}</p>
-                      <p className="mt-1.5 text-sm text-cream/75">{DUO_BIO[id]}</p>
-                    </div>
-                  );
-                })}
+              {/* who they are */}
+              <div>
+                <p className="text-sm leading-relaxed text-cream/85">
+                  White Chorus is an Indonesian electropop duo — Clara Friska
+                  Adinda and Emir Agung Mahendra. Their sound weaves trip-hop,
+                  dark electronics, and nostalgic pop, written for the late-night
+                  streets of Jakarta.
+                </p>
+                <div className="mt-6 space-y-5">
+                  {DUO_ORDER.map((id) => {
+                    const c = characters.find((x) => x.id === id);
+                    if (!c) return null;
+                    return (
+                      <div key={c.id}>
+                        <h3 className="font-display text-xl uppercase leading-none tracking-wide text-cream">
+                          {c.name}
+                        </h3>
+                        <p className="mt-1 text-xs text-cream/60">{c.fullName}</p>
+                        <p className="mt-1.5 text-sm text-cream/75">{DUO_BIO[id]}</p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
