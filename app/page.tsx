@@ -2,6 +2,7 @@ import Image from "next/image";
 import { YouTubeEmbed } from "@next/third-parties/google";
 import DressUp from "@/components/dress-up/DressUp";
 import { branding } from "@/data/assets";
+import { characters } from "@/data/characters";
 
 export default function Home() {
   return (
@@ -31,6 +32,91 @@ export default function Home() {
       </header>
 
       <DressUp />
+
+      {/* The Duo — meet the band */}
+      <section className="border-y border-cream/10 bg-plum-deep/40 py-16 sm:py-20">
+        <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
+              White Chorus
+            </p>
+            <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
+              The duo
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/75">
+              An Indonesian electropop duo — trip-hop, dark electronics, and
+              nostalgic pop, cut for the Jakarta night.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
+            {characters.map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center gap-4 rounded-2xl border border-cream/15 bg-plum p-4"
+              >
+                <div className="relative h-32 w-24 shrink-0 overflow-hidden rounded-xl bg-black/30">
+                  <Image
+                    src={c.baseSrc}
+                    alt={`${c.fullName}, member of White Chorus`}
+                    fill
+                    sizes="96px"
+                    className="object-contain"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-display text-2xl uppercase leading-none tracking-wide text-cream">
+                    {c.name}
+                  </h3>
+                  <p className="mt-1.5 text-sm text-cream/75">{c.fullName}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* L.U.S.F. — the new EP */}
+      <section className="border-y border-cream/10 bg-plum/40 py-16 sm:py-20">
+        <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
+              New EP
+            </p>
+            <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">
+              Love Under Flashing Strobe
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/75">
+              Six tracks of cinta under the strobe. Out September 2, 2026.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-8 max-w-lg border-y border-cream/10">
+            <div className="flex items-baseline justify-between gap-4 py-3.5">
+              <span className="font-display text-xl uppercase leading-none tracking-wide text-coral">
+                Melayang
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-cream/60">
+                Lead single · out now
+              </span>
+            </div>
+            <div className="border-t border-cream/10 py-3.5 text-center text-xs uppercase tracking-[0.14em] text-cream/50">
+              Five more tracks, September 2
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <a
+              href="https://youtu.be/MI_Kvwd7zLA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-full bg-coral px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97]"
+            >
+              Listen to Melayang
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* Melayang — lead single */}
       <section className="border-y border-cream/10 bg-plum-deep/40 py-20 sm:py-24">
