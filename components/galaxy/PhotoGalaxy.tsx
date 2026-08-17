@@ -6,7 +6,7 @@ import { ImageGalaxy } from "./image-galaxy";
 const PHOTOS = ["/photograph-1.jpg", "/photograph-2.jpg", "/photograph-3.jpg"];
 
 /** Number of drifting photo particles (the 3 photos repeat). */
-const COUNT = 24;
+const COUNT = 12;
 
 /**
  * Decorative perspective field of the band photographs drifting behind content.
