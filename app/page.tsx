@@ -6,14 +6,6 @@ import PhotoGalaxy from "@/components/galaxy/PhotoGalaxy";
 import { branding } from "@/data/assets";
 import { characters } from "@/data/characters";
 
-/** Square album-cover strip in The Duo section. */
-const ALBUMS = [
-  { src: "/album-1.png", alt: "Fast Food album cover" },
-  { src: "/album-2.png", alt: "Limbo album cover" },
-  { src: "/album-3.png", alt: "Minggu Live Art JKT album cover" },
-  { src: "/album-4.png", alt: "Electro-pop album cover" },
-];
-
 export default function Home() {
   return (
     <main
@@ -85,28 +77,32 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Album covers — square */}
-          <div className="mx-auto mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
-            {ALBUMS.map((a) => (
-              <div key={a.src} className="overflow-hidden rounded-2xl border border-cream/15 bg-plum">
-                <div className="relative aspect-square w-full">
-                  <Image
-                    src={a.src}
-                    alt={a.alt}
-                    fill
-                    sizes="(max-width: 480px) 45vw, 220px"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* L.U.S.F. — the new EP */}
       <section className="border-y border-cream/10 bg-plum/40 py-16 sm:py-20">
         <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
+          {/* White Chorus logo + L.U.S.F. art */}
+          <div className="flex items-center justify-center gap-6 sm:gap-10">
+            <Image
+              src="/white-chorus-logo.png"
+              alt="White Chorus"
+              width={1920}
+              height={1080}
+              className="h-12 w-auto sm:h-16"
+            />
+            <div className="relative aspect-square w-44 shrink-0 overflow-hidden rounded-2xl border border-cream/15 shadow-stage sm:w-64 lg:w-72">
+              <Image
+                src="/assets/lufs/album/lufs-cover.jpg"
+                alt="L.U.S.F. EP cover art"
+                fill
+                sizes="(max-width: 640px) 176px, 288px"
+                className="object-cover"
+              />
+            </div>
+          </div>
+
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               New EP
