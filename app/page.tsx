@@ -56,6 +56,7 @@ export default function Home() {
       {/* The Duo — meet the band */}
       <section className="relative overflow-hidden border-y border-cream/10 bg-plum-deep/40 py-16 sm:py-20">
         <PhotoGalaxy />
+        <div aria-hidden className="absolute inset-0 bg-plum-deep/60" />
         <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
