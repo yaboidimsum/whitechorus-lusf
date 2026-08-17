@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useSyncExternalStore, useState } from "react";
 import { sceneById, scenes } from "@/data/assets";
 import { characters } from "@/data/characters";
+import LookPreview from "./LookPreview";
 import {
   deleteLook,
   getLooksSnapshot,
@@ -37,6 +38,15 @@ export default function DressUp() {
   const [pendingDelete, setPendingDelete] = useState<SavedLook | null>(null);
   const [announcement, setAnnouncement] = useState("");
 
+  // Hall of Fame pagination — 3×3 grid (9 per page), newest first.
+  const PAGE_SIZE = 9;
+  const [page, setPage] = useState(0);
+  const totalPages = Math.max(1, Math.ceil(savedLooks.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const pageLooks = [...savedLooks]
+    .reverse()
+    .slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+
   const scene = sceneById.get(sceneId) ?? scenes[0];
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
   const hasSelection = Object.values(looks).some((l) => Object.keys(l).length > 0);
@@ -56,6 +66,7 @@ export default function DressUp() {
 
   const handleSave = () => {
     saveLook(looks, sceneId);
+    setPage(0); // newest first
     setAnnouncement("Outfit saved to the Hall of Fame.");
   };
 
@@ -177,40 +188,61 @@ export default function DressUp() {
             Your saved looks, kept private in your browser.
           </p>
           {savedLooks.length > 0 ? (
-            <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {savedLooks.map((s) => {
-                const savedScene = sceneById.get(s.sceneId);
-                return (
-                  <li key={s.id} className="overflow-hidden rounded-2xl border border-cream/15 bg-plum">
-                    <div className="relative aspect-[3/4] w-full">
-                      {savedScene ? (
-                        <Image
-                          src={savedScene.src}
-                          alt={savedScene.name}
-                          fill
-                          sizes="(max-width: 480px) 45vw, 200px"
-                          className="object-cover"
-                        />
-                      ) : null}
-                      <div className="absolute inset-x-0 bottom-0 bg-plum-deep/80 px-2 py-1.5">
-                        <p className="text-xs font-bold text-cream">{dateTimeFormat.format(s.savedAt)}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-2">
-                      <span className="text-xs text-cream/75">
-                        {characters.map((c) => c.name).join(" & ")}
+            <>
+              <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {pageLooks.map((s) => (
+                  <li
+                    key={s.id}
+                    className="relative overflow-hidden rounded-2xl border border-cream/15 bg-plum"
+                  >
+                    <LookPreview look={s} />
+                    {s.demo ? (
+                      <span className="absolute right-2 top-2 rounded-full bg-plum-deep/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-cream/80">
+                        Example
                       </span>
+                    ) : null}
+                    <div className="flex items-center justify-between gap-2 p-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-bold text-cream">
+                          {dateTimeFormat.format(s.savedAt)}
+                        </p>
+                        <p className="text-xs text-cream/60">
+                          {characters.map((c) => c.name).join(" & ")}
+                        </p>
+                      </div>
                       <button
                         onClick={() => handleDelete(s.id)}
-                        className="rounded-full px-2.5 py-1 text-xs font-semibold text-pink-neon hover:bg-pink-neon/10"
+                        className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold text-pink-neon hover:bg-pink-neon/10"
                       >
                         Delete
                       </button>
                     </div>
                   </li>
-                );
-              })}
-            </ul>
+                ))}
+              </ul>
+
+              {totalPages > 1 ? (
+                <div className="mt-6 flex items-center justify-center gap-4">
+                  <button
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    disabled={safePage === 0}
+                    className="rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream/80 transition-colors hover:border-cream/50 disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    Prev
+                  </button>
+                  <span className="text-sm text-cream/60">
+                    Page {safePage + 1} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                    disabled={safePage === totalPages - 1}
+                    className="rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream/80 transition-colors hover:border-cream/50 disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    Next
+                  </button>
+                </div>
+              ) : null}
+            </>
           ) : (
             <p className="mt-6 rounded-2xl border border-dashed border-cream/25 p-6 text-center text-sm text-cream/75">
               No outfits yet — dress the duo and save your first look.

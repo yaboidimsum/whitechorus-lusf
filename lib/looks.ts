@@ -28,6 +28,34 @@ function defaultValue(): StoredShape {
   return { looks: {}, nextId: 1 };
 }
 
+/** Seeded example outfits so the Hall of Fame ships populated (2 pages of 3×3). */
+function seedExamples(shape: StoredShape) {
+  const combos: Array<{ emir: Look; friska: Look; sceneId: string }> = [
+    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-joggers", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-scratch", shoes: "friska-shoes-high-tops" }, sceneId: "dance-floor" },
+    { emir: { top: "emir-top-tee", bottom: "emir-bottom-shorts", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-jeans", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
+    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-utility", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
+    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-shorts", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-jeans", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
+    { emir: { top: "emir-top-tee", bottom: "emir-bottom-joggers", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-scratch", shoes: "friska-shoes-high-tops" }, sceneId: "dance-floor" },
+    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-shorts", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
+    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-utility", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-jeans", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
+    { emir: { top: "emir-top-tee", bottom: "emir-bottom-joggers", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-scratch", shoes: "friska-shoes-high-tops" }, sceneId: "stage" },
+    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-shorts", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
+    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-utility", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-scratch", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
+  ];
+  const base = Date.now();
+  combos.forEach((c, i) => {
+    const id = String(shape.nextId);
+    shape.looks[id] = {
+      id,
+      looks: { emir: c.emir, friska: c.friska },
+      sceneId: c.sceneId,
+      savedAt: base - (combos.length - i) * 60_000,
+      demo: true,
+    };
+    shape.nextId += 1;
+  });
+}
+
 function readAll(): StoredShape {
   if (cache) return cache;
   let store = defaultValue();
@@ -37,6 +65,10 @@ function readAll(): StoredShape {
     localStorage.removeItem(LEGACY_KEY); // drop placeholder-era data
   } catch {
     store = defaultValue();
+  }
+  // Seed examples on a fresh install only (never had data before).
+  if (store.nextId === 1 && Object.keys(store.looks).length === 0) {
+    seedExamples(store);
   }
   cache = store;
   return store;

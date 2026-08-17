@@ -45,4 +45,6 @@ export interface SavedLook {
   looks: Record<CharacterId, Look>;
   sceneId: string;
   savedAt: number;
+  /** True for the seeded example looks shipped in the Hall of Fame. */
+  demo?: boolean;
 }
