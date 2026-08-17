@@ -76,15 +76,15 @@ for (const w of wardrobe) {
 export const itemsFor = (characterId: CharacterId, slot: SlotId): WardrobeItem[] =>
   byCharacterSlot.get(characterId)?.get(slot) ?? [];
 
-/** Stack order for layers: hair behind, accessory in front. */
-export const layerOrder: SlotId[] = ["hair", "top", "one-piece", "bottom", "shoes", "accessory"];
+/** Stack order for layers: hair behind, accessory in front. Bottoms overlap
+ *  shoe tops. */
+export const layerOrder: SlotId[] = ["hair", "top", "one-piece", "shoes", "bottom", "accessory"];
 
 /** Per-character layer order. Friska's tops sit OVER her bottoms (blouse over
- *  skirt), so `top` renders after `bottom`; Emir keeps the default (bottoms
- *  over tucked tops). */
+ *  skirt); Emir keeps the default (bottoms over tucked tops). */
 export function layerOrderFor(id: CharacterId): SlotId[] {
   if (id === "friska") {
-    return ["hair", "one-piece", "bottom", "top", "shoes", "accessory"];
+    return ["hair", "one-piece", "shoes", "bottom", "top", "accessory"];
   }
   return layerOrder;
 }
