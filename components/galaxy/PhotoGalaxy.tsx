@@ -9,6 +9,10 @@ const PHOTOS = [
   "/photograph-3.jpg",
   "/photograph-4.png",
   "/photograph-5.png",
+  "/album-1.png",
+  "/album-2.png",
+  "/album-3.png",
+  "/album-4.png",
 ];
 
 /** Number of drifting photo particles (the 3 photos repeat). */
