@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { YouTubeEmbed } from "@next/third-parties/google";
 import DressUp from "@/components/dress-up/DressUp";
+import PhotoGalaxy from "@/components/galaxy/PhotoGalaxy";
 import { branding } from "@/data/assets";
 import { characters } from "@/data/characters";
 
@@ -34,8 +35,9 @@ export default function Home() {
       <DressUp />
 
       {/* The Duo — meet the band */}
-      <section className="border-y border-cream/10 bg-plum-deep/40 py-16 sm:py-20">
-        <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
+      <section className="relative overflow-hidden border-y border-cream/10 bg-plum-deep/40 py-16 sm:py-20">
+        <PhotoGalaxy />
+        <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               White Chorus
