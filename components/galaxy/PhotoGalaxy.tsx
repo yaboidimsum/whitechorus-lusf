@@ -80,7 +80,7 @@ export default function PhotoGalaxy({ className = "" }: { className?: string }) 
     <div
       ref={containerRef}
       aria-hidden
-      className={`pointer-events-none absolute inset-0 ${className}`}
+      className={`pointer-events-none absolute inset-0 blur-[2px] ${className}`}
     />
   );
 }
