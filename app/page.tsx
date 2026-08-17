@@ -28,19 +28,19 @@ export default function Home() {
             width={1920}
             height={1080}
             priority
-            className="h-10 w-auto sm:h-12"
+            className="h-10 w-auto sm:h-24"
           />
           <Image
             src={branding.signage.src}
-            alt="L.U.S.F. Dress Up Machine"
+            alt="L.U.F.S. Dress Up Machine"
             width={200}
             height={200}
             priority
-            className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)]"
+            className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)] w-auto h-10 sm:h-60"
           />
         </div>
         <p className="mt-2 text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
-          White Chorus · L.U.S.F.
+          White Chorus · L.U.F.S.
         </p>
         <h1 className="font-display mt-1 text-4xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl text-balance">
           Dress for the afterglow
@@ -114,7 +114,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* L.U.S.F. — the new EP */}
+      {/* L.U.F.S. — the new EP */}
       <section className="border-t border-cream/10 bg-plum/40 py-12 sm:py-16">
         <div className="mx-auto w-full">
           <div className="text-center">

@@ -6,7 +6,7 @@ new domain concepts appear.
 | Term | Definition |
 |------|------------|
 | **White Chorus** | Indonesian electropop duo — Clara Friska Adinda and Emir Agung Mahendra. |
-| **L.U.S.F.** | *Love Under Flashing Strobe* — the duo's six-track EP and the dress-up site's theme. |
+| **L.U.F.S.** | *Love Under Flashing Strobe* — the duo's six-track EP and the dress-up site's theme. |
 | **Friska** | Dressable character — Clara Friska Adinda. Asset id `friska`. |
 | **Emir** | Dressable character — Emir Agung Mahendra. Asset id `emir`. |
 | **Dress-up game** | The player mixes and matches wardrobe items onto the two characters and saves the look. |

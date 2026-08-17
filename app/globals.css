@@ -5,7 +5,7 @@
   --background: #241a25;
   --foreground: #f5e7e4;
 
-  /* L.U.S.F. dress-up palette */
+  /* L.U.F.S. dress-up palette */
   --color-plum: #3b2d38;
   --color-plum-deep: #241a25;
   --color-lavender: #a690a5;
@@ -41,7 +41,7 @@ html {
 }
 
 body {
-  /* Transparent so the fixed -z backdrop (blurred L.U.S.F. cover) shows through.
+  /* Transparent so the fixed -z backdrop (blurred L.U.F.S. cover) shows through.
      Readability comes from the overlay wash on the backdrop layer itself. */
   background: transparent;
   color: var(--foreground);

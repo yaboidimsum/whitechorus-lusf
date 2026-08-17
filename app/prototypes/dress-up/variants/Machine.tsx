@@ -22,7 +22,7 @@ export function Machine() {
         <div className="flex items-center justify-center gap-3 rounded-t-2xl border-4 border-b-0 border-coral/60 bg-plum px-4 py-3">
           <Image
             src={branding.signage.src}
-            alt="L.U.S.F. Dress Up Machine"
+            alt="L.U.F.S. Dress Up Machine"
             width={56}
             height={56}
             className="opacity-90"

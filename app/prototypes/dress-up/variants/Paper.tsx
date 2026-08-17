@@ -17,7 +17,7 @@ export function Paper() {
         {/* Header */}
         <header className="text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#e06a6a]">
-            L.U.S.F. · Dress Up
+            L.U.F.S. · Dress Up
           </p>
           <h1 className="mt-1 font-display text-4xl uppercase leading-none tracking-wide text-[#2b1b31]">
             Sticker studio

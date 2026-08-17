@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { sceneById, scenes } from "@/data/assets";
 import { characters } from "@/data/characters";
 import { saveLook } from "@/lib/looks";
@@ -16,6 +18,12 @@ export default function DressUp() {
   const [looks, setLooks] = useState<Record<CharacterId, Look>>(emptyLooks);
   const [sceneId, setSceneId] = useState(scenes[0].id);
   const [announcement, setAnnouncement] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const scene = sceneById.get(sceneId) ?? scenes[0];
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
@@ -35,8 +43,12 @@ export default function DressUp() {
   };
 
   const handleSave = () => {
+    if (saving) return;
+    setSaving(true);
     saveLook(looks, sceneId);
     setAnnouncement("Outfit saved to the Hall of Fame.");
+    window.setTimeout(() => setSaving(false), 400);
+    toast.success("Outfit saved to the Hall of Fame");
   };
 
   return (
@@ -107,14 +119,22 @@ export default function DressUp() {
             {/* Wardrobe */}
             <WardrobeGrid key={character.id} character={character} look={looks[character.id]} onSelect={toggleItem} />
 
-            {/* Save */}
-            <button
-              onClick={handleSave}
-              disabled={!hasSelection}
-              className="rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
-            >
-              Save Outfit
-            </button>
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-3 mt-1">
+              <button
+                onClick={handleSave}
+                disabled={!mounted || !hasSelection || saving}
+                className="rounded-full bg-coral px-5 py-3.5 text-center text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
+              >
+                {saving ? "Saving..." : "Save Outfit"}
+              </button>
+              <Link
+                href="/hall-of-fame"
+                className="flex items-center justify-center rounded-full border border-cream/25 bg-transparent px-5 py-3.5 text-center text-sm font-extrabold uppercase tracking-[0.14em] text-cream transition-colors duration-150 ease-out-quart hover:border-cream/60 hover:bg-cream/5 active:scale-[0.97]"
+              >
+                Hall of Fame
+              </Link>
+            </div>
           </div>
         </div>
       </div>

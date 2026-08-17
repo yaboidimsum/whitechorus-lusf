@@ -20,7 +20,7 @@ export const characters: Character[] = [
 const A = "/assets/lufs/characters";
 
 /**
- * Wardrobe catalog mapped from the supplied L.U.S.F. asset pack.
+ * Wardrobe catalog mapped from the supplied L.U.F.S. asset pack.
  * Every layer shares the character base canvas, so it stacks with `inset-0`
  * over the base body. No `hair` / `one-piece` layers exist yet in the pack —
  * hair is baked into the base, and `one-piece` is reserved for future assets.
@@ -80,7 +80,9 @@ export const itemsFor = (characterId: CharacterId, slot: SlotId): WardrobeItem[]
  *  overlap shoe tops; tops overlap bottoms. */
 export const layerOrder: SlotId[] = ["hair", "shoes", "one-piece", "bottom", "top", "accessory"];
 
-/** Both artists share the same stack (tops over bottoms, bottoms over shoes). */
-export function layerOrderFor(_id: CharacterId): SlotId[] {
-  return layerOrder;
-}
+/** Returns `layerOrder` filtered to only the slots this character supports. */
+export const layerOrderFor = (characterId: CharacterId): SlotId[] => {
+  const character = characters.find((c) => c.id === characterId);
+  if (!character) return layerOrder;
+  return layerOrder.filter((slot) => character.slots.includes(slot));
+};

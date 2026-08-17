@@ -1,6 +1,6 @@
 import type { Scene } from "@/lib/types";
 
-/** Typed asset manifest for the L.U.S.F. dress-up asset pack. */
+/** Typed asset manifest for the L.U.F.S. dress-up asset pack. */
 export const scenes: Scene[] = [
   {
     id: "dance-floor",

@@ -1,12 +1,12 @@
 # White Chorus — Design System
 
-Visual language for the **L.U.S.F. Dress Up** experience. Source of truth for
+Visual language for the **L.U.F.S. Dress Up** experience. Source of truth for
 color, type, spacing, and component rules. Reference assets live in
 `wc-reference/` and must not be edited.
 
 ## Thesis
 
-White Chorus is an Indonesian electropop duo. Their L.U.S.F. EP
+White Chorus is an Indonesian electropop duo. Their L.U.F.S. EP
 (*Love Under Flashing Strobe*) is a late-night, nostalgic world — dance floors,
 stage lights, and the bittersweet feeling of missing someone in a crowd. The
 dress-up site drops you into that world: you style **Emir** and **Friska** for

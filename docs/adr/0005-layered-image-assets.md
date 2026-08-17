@@ -17,7 +17,7 @@ a `color` fallback for each wardrobe item.
 
 ## Superseded
 
-The supplied L.U.S.F. asset pack replaced color placeholders with real
+The supplied L.U.F.S. asset pack replaced color placeholders with real
 transparent PNG layers. See **ADR-0007** for the current asset pipeline. The
 stacked-layer model and `data/characters.ts` as single source of truth are
 unchanged.

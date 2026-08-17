@@ -1,7 +1,7 @@
 # White Chorus
 
 A dress-up game for the Indonesian electropop duo **White Chorus** and their
-**L.U.S.F.** EP: dress **Emir** and **Friska** for the dance floor, then save
+**L.U.F.S.** EP: dress **Emir** and **Friska** for the dance floor, then save
 the looks you love. Looks are stored privately in your browser (localStorage).
 
 Built on **Bun** + **Next.js 16** (App Router, Turbopack) + **Tailwind CSS v4**,
@@ -36,7 +36,7 @@ data/assets.ts                    # Typed asset manifest (scenes, branding, fram
 data/characters.ts                # Characters + wardrobe catalog (single source of truth)
 lib/looks.ts                      # Versioned localStorage persistence (looks:v2)
 lib/types.ts                      # Shared domain types
-public/assets/lufs/               # Optimized L.U.S.F. art (optimized from wc-reference/)
+public/assets/lufs/               # Optimized L.U.F.S. art (optimized from wc-reference/)
 docs/                             # Design system, ADRs + glossary
 wc-reference/                     # Source reference art (do not edit)
 ```
@@ -50,5 +50,5 @@ wc-reference/                     # Source reference art (do not edit)
 - [ADR-0003 Tailwind v4](docs/adr/0003-tailwind-v4.md)
 - [ADR-0004 localStorage looks](docs/adr/0004-localstorage-looks.md)
 - [ADR-0005 Layered image assets](docs/adr/0005-layered-image-assets.md) (superseded)
-- [ADR-0007 L.U.S.F. asset pipeline](docs/adr/0007-lufs-asset-pipeline.md)
+- [ADR-0007 L.U.F.S. asset pipeline](docs/adr/0007-lufs-asset-pipeline.md)
 # whitechorus-lusf

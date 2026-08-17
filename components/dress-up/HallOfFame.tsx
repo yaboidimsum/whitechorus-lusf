@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSyncExternalStore, useState } from "react";
+import { toast } from "sonner";
 import { characters } from "@/data/characters";
 import {
   deleteLook,
@@ -28,7 +29,6 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
     getServerLooksSnapshot,
   );
   const [page, setPage] = useState(0);
-  const [pendingDelete, setPendingDelete] = useState<SavedLook | null>(null);
   const [announcement, setAnnouncement] = useState("");
 
   const newestFirst = [...savedLooks].reverse();
@@ -44,15 +44,17 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
     const target = savedLooks.find((s) => s.id === id);
     if (!target) return;
     deleteLook(id);
-    setPendingDelete(target);
     setAnnouncement("Outfit deleted.");
-  };
-
-  const handleUndo = () => {
-    if (!pendingDelete) return;
-    restoreLook(pendingDelete);
-    setPendingDelete(null);
-    setAnnouncement("Outfit restored.");
+    toast("Outfit deleted from Hall of Fame", {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          restoreLook(target);
+          setAnnouncement("Outfit restored.");
+          toast.success("Outfit restored");
+        },
+      },
+    });
   };
 
   const card = (s: SavedLook) => (
@@ -155,18 +157,6 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
           )}
         </div>
       )}
-
-      {pendingDelete ? (
-        <div className="animate-enter mt-4 flex items-center justify-between rounded-2xl border border-cream/20 bg-plum px-4 py-3">
-          <p className="text-sm text-cream/85">Outfit deleted</p>
-          <button
-            onClick={handleUndo}
-            className="rounded-full px-3 py-1 text-sm font-bold text-coral hover:bg-coral/10"
-          >
-            Undo
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

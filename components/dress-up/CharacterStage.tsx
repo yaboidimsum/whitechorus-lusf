@@ -140,24 +140,6 @@ function CharacterFigure({
           }),
         )}
       </div>
-
-      {/* Active character indicator */}
-      {active ? (
-        <span
-          aria-hidden
-          className="
-            absolute
-            -inset-1
-            rounded-2xl
-            border-2
-            border-coral
-            shadow-[0_0_24px_rgba(255,154,131,0.45)]
-            transition-[opacity,transform]
-            duration-200
-            ease-out-quart
-          "
-        />
-      ) : null}
     </figure>
   );
 }

@@ -1,4 +1,4 @@
-# ADR 0007 — L.U.S.F. asset pipeline
+# ADR 0007 — L.U.F.S. asset pipeline
 
 - Status: Accepted
 - Date: 2026-08-17

@@ -24,7 +24,7 @@ export function Poster() {
             <br />
             the duo
           </p>
-          <p className="mt-3 text-sm text-cream/60">White Chorus — L.U.S.F.</p>
+          <p className="mt-3 text-sm text-cream/60">White Chorus — L.U.F.S.</p>
         </header>
 
         {/* Stage as poster centerpiece */}

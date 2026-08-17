@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Nunito_Sans } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 // Module-level font config — loaded once, preloaded by Next (rule `server-hoist-static-io`).
@@ -16,9 +17,9 @@ const nunito = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "White Chorus — L.U.S.F. Dress Up",
+  title: "White Chorus — L.U.F.S. Dress Up",
   description:
-    "Dress Emir and Friska for the dance floor and save your looks. A White Chorus L.U.S.F. experience.",
+    "Dress Emir and Friska for the dance floor and save your looks. A White Chorus L.U.F.S. experience.",
 };
 
 export const viewport: Viewport = {
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        {/* Blurred L.U.S.F. cover backdrop + plum wash for legibility.
+        {/* Blurred L.U.F.S. cover backdrop + plum wash for legibility.
             Fixed and -z-10 so in-flow content paints above it. Decorative, so
             pointer-events are disabled (ui-polish). */}
         <div
@@ -56,6 +57,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* <div aria-hidden className="pointer-events-none h-[45vh] w-full overflow-hidden">
           <DiaGradient />
         </div> */}
+        <Toaster
+          theme="dark"
+          position="bottom-right"
+          toastOptions={{
+            style: { background: "#3b2d38", border: "1px solid rgba(245,231,228,0.15)", color: "#f5e7e4" },
+          }}
+        />
       </body>
     </html>
   );
