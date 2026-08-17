@@ -12,6 +12,7 @@ import {
   subscribeLooks,
 } from "@/lib/looks";
 import type { SavedLook } from "@/lib/types";
+import { downloadSavedLook } from "@/lib/export";
 import LookPreview from "./LookPreview";
 
 const PAGE_SIZE = 9;
@@ -30,6 +31,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
   );
   const [page, setPage] = useState(0);
   const [announcement, setAnnouncement] = useState("");
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const newestFirst = [...savedLooks].reverse();
   const totalPages = Math.max(1, Math.ceil(savedLooks.length / PAGE_SIZE));
@@ -57,6 +59,21 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
     });
   };
 
+  const handleDownload = async (s: SavedLook) => {
+    if (downloadingId) return;
+    setDownloadingId(s.id);
+    const toastId = toast.loading("Generating your high-resolution download...");
+    try {
+      await downloadSavedLook(s);
+      toast.success("Outfit downloaded successfully!", { id: toastId });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate download.", { id: toastId });
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const card = (s: SavedLook) => (
     <li
       key={s.id}
@@ -68,7 +85,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
           Example
         </span>
       ) : null}
-      <div className="flex flex-col gap-1 p-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:p-2.5">
+      <div className="flex flex-col gap-1.5 p-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:p-2.5">
         <div className="min-w-0">
           <p className="truncate text-xs font-bold text-cream tabular-nums">
             {dateTimeFormat.format(s.savedAt)}
@@ -77,12 +94,21 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
             {characters.map((c) => c.name).join(" & ")}
           </p>
         </div>
-        <button
-          onClick={() => handleDelete(s.id)}
-          className="flex min-h-[36px] items-center justify-center rounded-full px-2.5 text-xs font-semibold text-pink-neon transition-[transform,colors] duration-150 ease-out-quart hover:bg-pink-neon/10 active:scale-[0.95] sm:min-h-[44px] sm:px-3.5"
-        >
-          Delete
-        </button>
+        <div className="flex gap-1 items-center">
+          <button
+            onClick={() => handleDownload(s)}
+            disabled={downloadingId !== null}
+            className="flex min-h-[36px] items-center justify-center rounded-full px-2.5 text-xs font-bold uppercase tracking-wider text-coral hover:bg-coral/15 transition-[transform,colors] duration-150 ease-out-quart active:scale-95 disabled:opacity-40 disabled:pointer-events-none sm:min-h-[44px] sm:px-3.5"
+          >
+            {downloadingId === s.id ? "..." : "Save IMG"}
+          </button>
+          <button
+            onClick={() => handleDelete(s.id)}
+            className="flex min-h-[36px] items-center justify-center rounded-full px-2.5 text-xs font-semibold text-pink-neon transition-[transform,colors] duration-150 ease-out-quart hover:bg-pink-neon/10 active:scale-[0.95] sm:min-h-[44px] sm:px-3.5"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </li>
   );

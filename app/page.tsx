@@ -3,6 +3,7 @@ import { YouTubeEmbed } from "@next/third-parties/google";
 import DressUp from "@/components/dress-up/DressUp";
 import DspLinks from "@/components/DspLinks";
 import PhotoGalaxy from "@/components/galaxy/PhotoGalaxy";
+import { CoverflowCarousel, type CoverflowSlide } from "@/components/ui/coverflow-carousel";
 import { branding } from "@/data/assets";
 import { characters } from "@/data/characters";
 import type { CharacterId } from "@/lib/types";
@@ -10,16 +11,34 @@ import type { CharacterId } from "@/lib/types";
 /** The Duo — bios drawn from the wc-reference notes. */
 const DUO_ORDER: CharacterId[] = ["friska", "emir"];
 const DUO_BIO: Record<CharacterId, string> = {
-  friska: "The melodic center; her voice carries the ache of Jakarta's afterglow.",
-  emir: "The production mind behind the strobe; his cryptic clue — “Row 9 Krapela” — hints at the stories the songs hide.",
+  friska: "Lead vocalist and songwriter",
+  emir: "Producer, composer, and instrumentalist",
 };
+
+const DUO_SLIDES: CoverflowSlide[] = [
+  {
+    src: "/photograph-1.jpg",
+    alt: "White Chorus — Clara Friska Adinda and Emir Agung Mahendra",
+    title: "White Chorus",
+    subtitle: "Clara Friska Adinda & Emir Agung Mahendra",
+  },
+  {
+    src: "/photograph-2.jpg",
+    alt: "White Chorus session portrait 2",
+    title: "L.U.F.S. Era",
+    subtitle: "Love Under Flashing Strobe",
+  },
+  {
+    src: "/photograph-3.jpg",
+    alt: "White Chorus session portrait 3",
+    title: "Afterglow",
+    subtitle: "Jakarta Electropop Duo",
+  },
+];
 
 export default function Home() {
   return (
-    <main
-      id="main"
-      className="flex-1"
-    >
+    <main id="main" className="flex-1">
       <header className="animate-rise mx-auto flex max-w-2xl flex-col items-center text-center px-4 pt-6 sm:px-6 sm:pt-10 lg:max-w-5xl">
         <div className="flex items-center justify-center gap-4 sm:gap-7">
           <Image
@@ -72,37 +91,43 @@ export default function Home() {
           </div>
 
           <div className="mx-auto mt-8 w-full max-w-5xl rounded-2xl border border-cream/15 bg-plum-deep/75 p-5 shadow-stage backdrop-blur sm:mt-10 sm:p-8">
-            <div className="grid items-center gap-6 sm:grid-cols-2 sm:gap-8">
-              {/* duo photo */}
-              <div className="relative aspect-[3/4] w-full max-w-xs mx-auto sm:max-w-none overflow-hidden rounded-xl border border-cream/15">
-                <Image
-                  src="/photograph-1.jpg"
-                  alt="White Chorus — Clara Friska Adinda and Emir Agung Mahendra"
-                  fill
-                  sizes="(max-width: 640px) 90vw, 400px"
-                  className="object-cover"
-                />
-              </div>
+            {/* 3D Coverflow Carousel with Photograph 1-3 */}
+            <div className="w-full">
+              <CoverflowCarousel
+                slides={DUO_SLIDES}
+                cardWidth="clamp(190px, 28vw, 320px)"
+                showNavigation
+                showPagination
+                cardClassName="border border-cream/20 bg-plum shadow-2xl"
+              />
+            </div>
 
-              {/* who they are */}
-              <div>
-                <p className="text-sm leading-relaxed text-cream/85">
-                  White Chorus is an Indonesian electropop duo — Clara Friska
-                  Adinda and Emir Agung Mahendra. Their sound weaves trip-hop,
-                  dark electronics, and nostalgic pop, written for the late-night
-                  streets of Jakarta.
-                </p>
-                <div className="mt-6 space-y-5">
+            {/* who they are — positioned beneath the image carousel */}
+            <div className="mt-8 border-t border-cream/10 pt-8 sm:mt-10">
+              <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
+                <div>
+                  <h3 className="font-display text-2xl uppercase leading-none tracking-wide text-coral sm:text-3xl">
+                    About White Chorus
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-cream/85">
+                    White Chorus is an Indonesian electropop and electronic music duo formed in 2019 in Bandung. The group consists of vocalist Clara Friska Adinda and instrumentalist/producer Emir Agung Mahendra.
+                  </p>
+                </div>
+                <div className="space-y-5">
                   {DUO_ORDER.map((id) => {
                     const c = characters.find((x) => x.id === id);
                     if (!c) return null;
                     return (
                       <div key={c.id}>
-                        <h3 className="font-display text-xl uppercase leading-none tracking-wide text-cream">
+                        <h4 className="font-display text-xl uppercase leading-none tracking-wide text-cream">
                           {c.name}
-                        </h3>
-                        <p className="mt-1 text-xs text-cream/60">{c.fullName}</p>
-                        <p className="mt-1.5 text-sm text-cream/75">{DUO_BIO[id]}</p>
+                        </h4>
+                        <p className="mt-1 text-xs text-cream/60">
+                          {c.fullName}
+                        </p>
+                        <p className="mt-1.5 text-sm text-cream/75">
+                          {DUO_BIO[id]}
+                        </p>
                       </div>
                     );
                   })}
@@ -110,7 +135,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -130,7 +154,7 @@ export default function Home() {
           </div>
 
           {/* Lead single */}
-          <div className="ep-video-frame mx-auto mt-8 aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-coral/30 shadow-stage sm:mt-10 sm:rounded-[2rem]">
+          <div className="ep-video-frame mx-auto mt-8 aspect-video w-full max-w-5xl overflow-hidden rounded-2xl border border-coral/30 shadow-stage sm:mt-10 sm:rounded-[2rem]">
             <YouTubeEmbed
               videoid="MI_Kvwd7zLA"
               playlabel="Play Melayang by White Chorus"
