@@ -13,14 +13,24 @@ export default function Home() {
       className="flex-1 px-4 py-8 pb-[env(safe-area-inset-bottom)] sm:px-6"
     >
       <header className="mx-auto mb-12 flex max-w-2xl flex-col items-center text-center lg:max-w-5xl">
-        <Image
-          src={branding.signage.src}
-          alt="L.U.S.F. Dress Up Machine"
-          width={160}
-          height={160}
-          priority
-          className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)]"
-        />
+        <div className="flex items-center justify-center gap-5 sm:gap-7">
+          <Image
+            src="/white-chorus-logo.png"
+            alt="White Chorus"
+            width={1920}
+            height={1080}
+            priority
+            className="h-10 w-auto sm:h-12"
+          />
+          <Image
+            src={branding.signage.src}
+            alt="L.U.S.F. Dress Up Machine"
+            width={200}
+            height={200}
+            priority
+            className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)]"
+          />
+        </div>
         <p className="mt-2 text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
           White Chorus · L.U.S.F.
         </p>
@@ -83,26 +93,6 @@ export default function Home() {
       {/* L.U.S.F. — the new EP */}
       <section className="border-y border-cream/10 bg-plum/40 py-16 sm:py-20">
         <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
-          {/* White Chorus logo + L.U.S.F. art */}
-          <div className="flex items-center justify-center gap-6 sm:gap-10">
-            <Image
-              src="/white-chorus-logo.png"
-              alt="White Chorus"
-              width={1920}
-              height={1080}
-              className="h-12 w-auto sm:h-16"
-            />
-            <div className="relative aspect-square w-44 shrink-0 overflow-hidden rounded-2xl border border-cream/15 shadow-stage sm:w-64 lg:w-72">
-              <Image
-                src="/assets/lufs/album/lufs-cover.jpg"
-                alt="L.U.S.F. EP cover art"
-                fill
-                sizes="(max-width: 640px) 176px, 288px"
-                className="object-cover"
-              />
-            </div>
-          </div>
-
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
               New EP
