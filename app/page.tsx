@@ -130,7 +130,7 @@ export default function Home() {
           </div>
 
           {/* Lead single */}
-          <div className="mx-auto mt-10 aspect-video w-full max-w-3xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
+          <div className="ep-video-frame mx-auto mt-10 aspect-video w-full max-w-3xl overflow-hidden rounded-[2rem] border border-coral/30 shadow-stage">
             <YouTubeEmbed
               videoid="MI_Kvwd7zLA"
               playlabel="Play Melayang by White Chorus"

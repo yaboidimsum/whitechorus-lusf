@@ -82,6 +82,20 @@ button {
   touch-action: manipulation;
 }
 
+/* Keep Next's lite-youtube element flush with its responsive video frame.
+   Library default max-width: 720px otherwise leaves a visible side strip
+   inside wider max-w-3xl containers. */
+.ep-video-frame > [data-ntpc="YouTubeEmbed"] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ep-video-frame > [data-ntpc="YouTubeEmbed"] > lite-youtube {
+  display: block;
+  width: 100% !important;
+  max-width: none !important;
+}
+
 /* Brand selection tint */
 ::selection {
   background: var(--color-coral);
