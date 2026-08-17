@@ -8,7 +8,6 @@ import { saveLook } from "@/lib/looks";
 import type { CharacterId, Look, SlotId } from "@/lib/types";
 import CharacterStage from "./CharacterStage";
 import WardrobeGrid from "./WardrobeGrid";
-import HallOfFame from "./HallOfFame";
 
 const emptyLooks = (): Record<CharacterId, Look> => ({ emir: {}, friska: {} });
 
@@ -118,9 +117,6 @@ export default function DressUp() {
             </button>
           </div>
         </div>
-
-        {/* Compact Hall of Fame entry */}
-        <HallOfFame variant="preview" />
       </div>
     </div>
   );
