@@ -67,7 +67,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
                 />
               </span>
               <span
-                className={`mt-1.5 block truncate px-1 text-center text-[11px] font-semibold ${
+                className={`mt-1.5 block truncate px-1 text-center text-xs font-semibold ${
                   selected ? "text-coral" : "text-cream/80"
                 }`}
               >

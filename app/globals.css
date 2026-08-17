@@ -46,6 +46,9 @@ body {
   background: transparent;
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
+  /* A missing weight/style must surface, not render a fabricated bold/italic. */
+  font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* One-shot entrance for conditionally-mounted elements (toast).
@@ -77,6 +80,12 @@ body {
 
 button {
   touch-action: manipulation;
+}
+
+/* Brand selection tint */
+::selection {
+  background: var(--color-coral);
+  color: var(--color-plum-deep);
 }
 
 /* Reduced motion — no `!important`. This is unlayered CSS, so it outranks

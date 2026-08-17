@@ -18,7 +18,7 @@ export default function Home() {
           priority
           className="drop-shadow-[0_0_28px_rgba(255,154,131,0.35)]"
         />
-        <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.3em] text-pink-neon">
+        <p className="mt-2 text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
           White Chorus · L.U.S.F.
         </p>
         <h1 className="font-display mt-1 text-4xl font-normal uppercase leading-none tracking-wide text-cream sm:text-5xl text-balance">
@@ -35,7 +35,7 @@ export default function Home() {
       {/* Melayang — lead single */}
       <section className="border-y border-cream/10 bg-plum-deep/40 py-20 sm:py-24">
         <div className="mx-auto w-full max-w-2xl text-center lg:max-w-5xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-pink-neon">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
             White Chorus · Melayang
           </p>
           <h2 className="font-display mt-1 text-3xl font-normal uppercase leading-none tracking-wide text-cream text-balance sm:text-4xl">

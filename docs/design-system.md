@@ -50,12 +50,27 @@ Three deliberate roles, loaded via `next/font`:
 
 Rules:
 
-- Display is uppercase, condensed, tracking-wide — used for the hero headline
-  and the `L.U.S.F.` eyebrow only.
+- Display is uppercase, condensed — used for the hero headline and section
+  headings. Letter-spacing stays in the `tracking-normal`–`tracking-wide` band;
+  don't go looser than `tracking-wide` or tighter than `-0.02em`.
 - Interface copy is sentence case, Nunito Sans.
 - Category and action labels are uppercase, bold, `tracking-[0.12em]`–`[0.2em]`.
-- Headlines use `text-pretty` to avoid widows.
+- Headlines use `text-wrap: balance`; short descriptions use `text-pretty`.
 - Timestamps use `Intl.DateTimeFormat` — never hardcoded formats.
+
+### Type scale
+
+Small fixed scale — departures need justification. **12px is the floor** (never
+10px/11px micro-labels):
+
+| Step | Tailwind | Use |
+|---|---|---|
+| Label | `text-xs` | eyebrows, category tabs, item names, card meta (floor = 12px) |
+| Body | `text-sm` (14px) | subcopy, empty states |
+| Section heading | `text-2xl`–`text-4xl` `font-display` | Hall of Fame, Melayang |
+| Hero | `text-4xl`–`text-5xl` `font-display` | page headline |
+
+Secondary text never drops below `cream/70`; headings use full `cream`.
 
 ## Spacing & Radius
 

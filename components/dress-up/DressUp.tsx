@@ -197,12 +197,12 @@ export default function DressUp() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between p-2">
-                      <span className="text-[11px] text-cream/60">
+                      <span className="text-xs text-cream/75">
                         {characters.map((c) => c.name).join(" & ")}
                       </span>
                       <button
                         onClick={() => handleDelete(s.id)}
-                        className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-pink-neon hover:bg-pink-neon/10"
+                        className="rounded-full px-2.5 py-1 text-xs font-semibold text-pink-neon hover:bg-pink-neon/10"
                       >
                         Delete
                       </button>
@@ -212,7 +212,7 @@ export default function DressUp() {
               })}
             </ul>
           ) : (
-            <p className="mt-6 rounded-2xl border border-dashed border-cream/25 p-6 text-center text-sm text-cream/55">
+            <p className="mt-6 rounded-2xl border border-dashed border-cream/25 p-6 text-center text-sm text-cream/75">
               No outfits yet — dress the duo and save your first look.
             </p>
           )}

@@ -48,7 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-plum-deep/70" />
         {children}
         <footer className="border-t border-cream/10 bg-plum pb-[env(safe-area-inset-bottom)]">
-          <p className="mx-auto max-w-5xl px-4 py-6 text-center text-xs text-cream/50">
+          <p className="mx-auto max-w-5xl px-4 py-6 text-center text-xs text-cream/70">
             © 2026 White Chorus. All rights reserved.
           </p>
         </footer>
