@@ -54,7 +54,7 @@ export default function Home() {
       <DressUp />
 
       {/* The Duo — meet the band */}
-      <section className="relative overflow-hidden border-y border-cream/10 bg-plum-deep/40 py-16 sm:py-20">
+      <section className="relative overflow-hidden border-t border-cream/10 bg-plum-deep/40 py-12 sm:py-16">
         <PhotoGalaxy />
         <div aria-hidden className="absolute inset-0 bg-plum-deep/60" />
         <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-5xl">
@@ -115,7 +115,7 @@ export default function Home() {
       </section>
 
       {/* L.U.S.F. — the new EP */}
-      <section className="border-y border-cream/10 bg-plum/40 py-16 sm:py-20">
+      <section className="border-t border-cream/10 bg-plum/40 py-12 sm:py-16">
         <div className="mx-auto w-full max-w-2xl lg:max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-pink-neon">
@@ -141,7 +141,7 @@ export default function Home() {
           </p>
 
           {/* Tracklist */}
-          <div className="mx-auto mt-8 max-w-lg border-y border-cream/10">
+          <div className="mx-auto mt-10 max-w-lg border-y border-cream/10">
             <div className="flex items-baseline justify-between gap-4 py-3.5">
               <span className="font-display text-xl uppercase leading-none tracking-wide text-coral">
                 Melayang

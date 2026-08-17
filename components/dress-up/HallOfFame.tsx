@@ -77,7 +77,7 @@ export default function HallOfFame({ variant = "full" }: { variant?: "full" | "p
         </div>
         <button
           onClick={() => handleDelete(s.id)}
-          className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold text-pink-neon hover:bg-pink-neon/10"
+          className="flex min-h-[44px] shrink-0 items-center rounded-full px-3.5 text-xs font-semibold text-pink-neon transition-colors hover:bg-pink-neon/10"
         >
           Delete
         </button>
