@@ -30,7 +30,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               key={slot}
               aria-pressed={selected}
               onClick={() => setActiveSlot(slot)}
-              className={`shrink-0 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-colors ${
+              className={`min-h-[44px] shrink-0 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-colors ${
                 selected
                   ? "border-coral bg-coral text-plum-deep"
                   : "border-cream/25 text-cream/80 hover:border-cream/60"
@@ -43,7 +43,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
       </div>
 
       {/* Item grid */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         {options.map((item) => {
           const selected = look[item.slot] === item.id;
           return (
@@ -51,7 +51,7 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               key={item.id}
               onClick={() => onSelect(item.slot, item.id)}
               aria-pressed={selected}
-              className={`group relative rounded-2xl border p-1.5 transition-colors ${
+              className={`group relative rounded-2xl border p-1 transition-colors ${
                 selected
                   ? "border-coral bg-coral/10"
                   : "border-cream/15 bg-plum hover:border-cream/40"

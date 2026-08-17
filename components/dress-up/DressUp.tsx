@@ -46,15 +46,15 @@ export default function DressUp() {
         {announcement}
       </p>
 
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 lg:max-w-5xl">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 lg:max-w-5xl">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start">
           {/* Stage preview — first on mobile, right column on desktop */}
           <div className="lg:order-2 lg:sticky lg:top-6 lg:self-start">
             <CharacterStage scene={scene} looks={looks} activeId={activeId} />
           </div>
 
           {/* Controls — left column on desktop */}
-          <div className="flex flex-col gap-5 lg:order-1">
+          <div className="flex flex-col gap-3 lg:order-1">
             {/* Character switcher */}
             <div className="grid grid-cols-2 gap-2" role="group" aria-label="Choose who to dress">
               {characters.map((c) => {
@@ -85,7 +85,7 @@ export default function DressUp() {
                     key={s.id}
                     onClick={() => setSceneId(s.id)}
                     aria-pressed={selected}
-                    className={`relative aspect-[3/4] w-28 shrink-0 overflow-hidden rounded-2xl border transition-colors ${
+                    className={`relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-2xl border transition-colors ${
                       selected ? "border-coral" : "border-cream/20 hover:border-cream/50"
                     }`}
                   >
@@ -93,7 +93,7 @@ export default function DressUp() {
                       src={s.src}
                       alt={s.name}
                       fill
-                      sizes="112px"
+                      sizes="80px"
                       className="object-cover"
                     />
                     <span className="absolute inset-x-0 bottom-0 bg-plum-deep/70 px-1.5 py-1 text-xs font-semibold text-cream/90">

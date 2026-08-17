@@ -13,7 +13,7 @@ interface StageProps {
 export default function CharacterStage({ scene, looks, activeId }: StageProps) {
   return (
     <section
-      className="relative overflow-hidden rounded-[2rem] border border-cream/15 shadow-stage"
+      className="relative overflow-hidden rounded-3xl border border-cream/15 shadow-stage"
       aria-label="Dressing room stage"
     >
       {/* Scene backdrop */}
