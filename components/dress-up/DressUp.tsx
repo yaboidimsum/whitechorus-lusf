@@ -46,7 +46,7 @@ export default function DressUp() {
         {announcement}
       </p>
 
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 lg:max-w-5xl">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 lg:max-w-6xl">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start">
           {/* Stage preview — first on mobile, right column on desktop */}
           <div className="lg:order-2 lg:sticky lg:top-6 lg:self-start">

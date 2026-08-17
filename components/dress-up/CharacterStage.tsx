@@ -67,7 +67,7 @@ function CharacterFigure({
     <figure
       role="img"
       aria-label={description}
-      className={`relative w-[72%] max-w-[560px] transition-[transform,opacity] duration-200 ease-in-out-quart ${
+      className={`relative w-[72%] max-w-[560px] transition-[transform,opacity] duration-200 ease-in-out-quart lg:w-[80%] lg:max-w-[640px] ${
         active ? "z-10 -translate-y-1" : "opacity-90"
       }`}
     >
@@ -77,7 +77,7 @@ function CharacterFigure({
           alt=""
           fill
           priority
-          sizes="(max-width: 640px) 72vw, 560px"
+          sizes="(max-width: 640px) 72vw, 640px"
           className="object-contain"
         />
         {/* Wardrobe — all layers rendered and cached, visibility toggled by
@@ -92,7 +92,7 @@ function CharacterFigure({
                 src={item.src}
                 alt=""
                 fill
-                sizes="(max-width: 640px) 72vw, 560px"
+                sizes="(max-width: 640px) 72vw, 640px"
                 className={`object-contain transition-opacity duration-150 ease-out-quart ${
                   selected ? "opacity-100" : "opacity-0"
                 }`}
