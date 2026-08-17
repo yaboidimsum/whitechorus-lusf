@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Toaster } from "sonner";
 import "./picker.css";
 import { Strobe } from "./variants/Strobe";
 import { Poster } from "./variants/Poster";
@@ -101,6 +102,14 @@ export default function PrototypeDressUpPage() {
           ↻
         </button>
       </nav>
+
+      <Toaster
+        theme="dark"
+        position="bottom-right"
+        toastOptions={{
+          style: { background: "#3b2d38", border: "1px solid rgba(245,231,228,0.15)", color: "#f5e7e4" },
+        }}
+      />
     </main>
   );
 }

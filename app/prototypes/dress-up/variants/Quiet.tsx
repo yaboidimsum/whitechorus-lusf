@@ -5,11 +5,12 @@ import { characters, itemsFor, slotLabels } from "@/data/characters";
 import { sceneById, scenes } from "@/data/assets";
 import { CharacterFigure } from "../CharacterFigure";
 import { useLooks } from "../useLooks";
+import { SaveAndHall } from "../SaveAndHall";
 
 /** Quiet — density/restraint. Clean dark stage, characters centered, controls
  *  tucked in a slim bar, one coral accent, generous air. */
 export function Quiet() {
-  const { activeId, setActiveId, looks, toggleItem, sceneId, setSceneId } = useLooks();
+  const { activeId, setActiveId, looks, toggleItem, sceneId, setSceneId, save, saving, hasSelection } = useLooks();
   const scene = sceneById.get(sceneId) ?? scenes[0];
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
 
@@ -95,6 +96,12 @@ export function Quiet() {
               </div>
             </div>
           ))}
+
+          <div className="flex justify-center">
+            <div className="w-full max-w-sm">
+              <SaveAndHall save={save} saving={saving} hasSelection={hasSelection} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

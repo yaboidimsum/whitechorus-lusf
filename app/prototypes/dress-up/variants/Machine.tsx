@@ -6,11 +6,12 @@ import { sceneById, scenes } from "@/data/assets";
 import { branding } from "@/data/assets";
 import { CharacterFigure } from "../CharacterFigure";
 import { useLooks } from "../useLooks";
+import { SaveAndHall } from "../SaveAndHall";
 
 /** Machine — arcade cabinet. The "Dress Up Machine" signage becomes a cabinet:
  *  marquee frame, slot-style select, big tactile buttons. */
 export function Machine() {
-  const { activeId, setActiveId, looks, toggleItem, sceneId, setSceneId } = useLooks();
+  const { activeId, setActiveId, looks, toggleItem, sceneId, setSceneId, save, saving, hasSelection } = useLooks();
   const scene = sceneById.get(sceneId) ?? scenes[0];
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
 
@@ -113,6 +114,8 @@ export function Machine() {
                 </div>
               </div>
             ))}
+
+            <SaveAndHall save={save} saving={saving} hasSelection={hasSelection} />
           </div>
         </div>
       </div>

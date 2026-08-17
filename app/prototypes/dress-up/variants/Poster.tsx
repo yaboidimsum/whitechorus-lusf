@@ -5,11 +5,12 @@ import { characters, itemsFor, slotLabels } from "@/data/characters";
 import { sceneById, scenes } from "@/data/assets";
 import { CharacterFigure } from "../CharacterFigure";
 import { useLooks } from "../useLooks";
+import { SaveAndHall } from "../SaveAndHall";
 
 /** Poster — typographic/editorial. Gig-poster masthead, hairline rules,
  *  the stage as a poster centerpiece, controls as an index. */
 export function Poster() {
-  const { activeId, setActiveId, looks, toggleItem, sceneId, setSceneId } = useLooks();
+  const { activeId, setActiveId, looks, toggleItem, sceneId, setSceneId, save, saving, hasSelection } = useLooks();
   const scene = sceneById.get(sceneId) ?? scenes[0];
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
 
@@ -114,6 +115,10 @@ export function Poster() {
               </div>
             </div>
           ))}
+
+          <div className="sm:col-span-2">
+            <SaveAndHall save={save} saving={saving} hasSelection={hasSelection} />
+          </div>
         </div>
       </div>
     </div>

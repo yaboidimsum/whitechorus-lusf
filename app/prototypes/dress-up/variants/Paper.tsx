@@ -3,11 +3,12 @@
 import { characters, itemsFor, slotLabels } from "@/data/characters";
 import { CharacterFigure } from "../CharacterFigure";
 import { useLooks } from "../useLooks";
+import { SaveAndHall } from "../SaveAndHall";
 
 /** Paper — light/playful. The illustrated paper-doll direction: cream paper,
  *  hand-drawn-weight borders, sticker wardrobe tiles. Breaks the dark identity. */
 export function Paper() {
-  const { activeId, setActiveId, looks, toggleItem } = useLooks();
+  const { activeId, setActiveId, looks, toggleItem, save, saving, hasSelection } = useLooks();
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
 
   return (
@@ -96,6 +97,10 @@ export function Paper() {
             </div>
           </div>
         ))}
+
+        <div className="mt-6">
+          <SaveAndHall save={save} saving={saving} hasSelection={hasSelection} tone="light" />
+        </div>
       </div>
     </div>
   );
