@@ -3,17 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
-import { Sparkles, X, Dices } from "lucide-react";
+import { Sparkles, X, Dices, ImagePlus, SlidersHorizontal, RotateCcw, ZoomIn, Paintbrush } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sceneById, scenes } from "@/data/assets";
 import { characters, itemsFor } from "@/data/characters";
 import { saveLook } from "@/lib/looks";
-import type { CharacterId, Look, SlotId } from "@/lib/types";
+import { compressImageFile } from "@/lib/image-compress";
+import type { CharacterId, CustomKaosData, CustomSceneData, Look, Scene, SlotId } from "@/lib/types";
 import CharacterStage from "./CharacterStage";
 import WardrobeGrid from "./WardrobeGrid";
+import CustomKaosModal from "./CustomKaosModal";
 
 const emptyLooks = (): Record<CharacterId, Look> => ({ emir: {}, friska: {} });
 
@@ -22,20 +24,38 @@ export default function DressUp() {
   const [activeId, setActiveId] = useState<CharacterId>("emir");
   const [looks, setLooks] = useState<Record<CharacterId, Look>>(emptyLooks);
   const [sceneId, setSceneId] = useState(scenes[0].id);
+  const [customBg, setCustomBg] = useState<CustomSceneData | null>(null);
+  const [customKaos, setCustomKaos] = useState<Partial<Record<CharacterId, CustomKaosData>>>({});
+  const [showKaosModal, setShowKaosModal] = useState(false);
+  const [isAdjustingBg, setIsAdjustingBg] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [mounted, setMounted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [username, setUsername] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     setMounted(true);
     const savedName = localStorage.getItem("stylist:username");
     if (savedName) setUsername(savedName);
+
+    // Load cached custom kaos artwork
+    try {
+      const cachedEmir = localStorage.getItem("stylist:custom-kaos:emir");
+      const cachedFriska = localStorage.getItem("stylist:custom-kaos:friska");
+      const initialKaos: Partial<Record<CharacterId, CustomKaosData>> = {};
+      if (cachedEmir) initialKaos.emir = JSON.parse(cachedEmir);
+      if (cachedFriska) initialKaos.friska = JSON.parse(cachedFriska);
+      setCustomKaos(initialKaos);
+    } catch {}
   }, []);
 
-  const scene = sceneById.get(sceneId) ?? scenes[0];
+  const scene: Scene = sceneId === "custom" && customBg
+    ? { id: "custom", name: "Custom Photo", src: customBg.src }
+    : (sceneById.get(sceneId) ?? scenes[0]);
+
   const character = characters.find((c) => c.id === activeId) ?? characters[0];
   const hasSelection = Object.values(looks).some((l) => Object.keys(l).length > 0);
 
@@ -47,9 +67,32 @@ export default function DressUp() {
         delete next[slot]; // tap again to undress
       } else {
         next[slot] = itemId;
+        // If user selects custom kaos, auto-open customizer modal if not configured yet
+        if (itemId === `${activeId}-top-custom` && !customKaos[activeId]) {
+          setShowKaosModal(true);
+        }
       }
       return { ...prev, [activeId]: next };
     });
+  };
+
+  const handleApplyCustomKaos = (data: CustomKaosData) => {
+    setCustomKaos((prev) => {
+      const next = { ...prev, [activeId]: data };
+      try {
+        localStorage.setItem(`stylist:custom-kaos:${activeId}`, JSON.stringify(data));
+      } catch {}
+      return next;
+    });
+
+    // Ensure custom top is equipped
+    setLooks((prev) => ({
+      ...prev,
+      [activeId]: {
+        ...prev[activeId],
+        top: `${activeId}-top-custom`,
+      },
+    }));
   };
 
   const handleRandomize = () => {
@@ -68,6 +111,34 @@ export default function DressUp() {
     setLooks(nextLooks);
     setAnnouncement("Randomized outfits for Emir & Friska.");
     toast("✨ Outfits randomized!", { duration: 1500 });
+  };
+
+  const handleUploadBg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      toast.loading("Optimizing custom background...", { id: "compress-bg" });
+      const compressedSrc = await compressImageFile(file, 1500, 0.82);
+      setCustomBg({
+        src: compressedSrc,
+        posX: 50,
+        posY: 50,
+        scale: 1,
+      });
+      setSceneId("custom");
+      setIsAdjustingBg(true);
+      toast.success("Custom background applied! Drag to adjust.", { id: "compress-bg" });
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to upload image", { id: "compress-bg" });
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleResetBgPosition = () => {
+    if (!customBg) return;
+    setCustomBg((prev) => (prev ? { ...prev, posX: 50, posY: 50, scale: 1 } : null));
+    toast.success("Background position reset to center");
   };
 
   const handleOpenSave = () => {
@@ -96,7 +167,7 @@ export default function DressUp() {
       // localStorage error fallback
     }
 
-    const saved = saveLook(looks, sceneId, cleanName, 0);
+    const saved = saveLook(looks, sceneId, cleanName, 0, customBg || undefined, customKaos);
     setAnnouncement("Outfit saved to the Hall of Fame.");
     toast.success("Outfit saved to the Hall of Fame!");
     setShowSaveModal(false);
@@ -108,6 +179,26 @@ export default function DressUp() {
 
   return (
     <div className="w-full px-4 py-8 sm:px-6 sm:py-16">
+      {/* Hidden file input for custom background */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        aria-label="Upload custom background image"
+        onChange={handleUploadBg}
+        className="hidden"
+      />
+
+      {/* Custom Kaos Editor Modal */}
+      <CustomKaosModal
+        isOpen={showKaosModal}
+        onClose={() => setShowKaosModal(false)}
+        characterId={activeId}
+        characterName={character.name}
+        initialData={customKaos[activeId]}
+        onApply={handleApplyCustomKaos}
+      />
+
       {/* Screen-reader announcements */}
       <p role="status" className="sr-only">
         {announcement}
@@ -117,7 +208,15 @@ export default function DressUp() {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start">
           {/* Stage preview — first on mobile, right column on desktop */}
           <div className="relative lg:order-2 lg:sticky lg:top-6 lg:self-start">
-            <CharacterStage scene={scene} looks={looks} activeId={activeId} />
+            <CharacterStage
+              scene={scene}
+              looks={looks}
+              activeId={activeId}
+              customScene={customBg}
+              customKaos={customKaos}
+              onAdjustBg={(updater) => setCustomBg((prev) => (prev ? updater(prev) : null))}
+              isAdjustingBg={isAdjustingBg && sceneId === "custom"}
+            />
             <motion.button
               type="button"
               onClick={handleRandomize}
@@ -163,13 +262,46 @@ export default function DressUp() {
               })}
             </div>
 
-            {/* Stage Scene / Background options styled identically to outfit cards */}
+            {/* Custom Kaos Studio Trigger Bar (if equipped) */}
+            {looks[activeId]?.top === `${activeId}-top-custom` && (
+              <motion.button
+                type="button"
+                onClick={() => setShowKaosModal(true)}
+                initial={shouldReduceMotion ? false : { scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center justify-center gap-2 rounded-2xl border border-coral/40 bg-gradient-to-r from-coral/20 via-coral/30 to-coral/20 p-2.5 text-xs font-bold text-coral shadow-md backdrop-blur-md transition-all hover:bg-coral hover:text-plum-deep"
+              >
+                <Paintbrush className="size-4" />
+                <span>🎨 Customize {character.name}&apos;s T-Shirt (Paint / Pattern)</span>
+              </motion.button>
+            )}
+
+            {/* Stage Scene / Background options */}
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold text-cream/70">
-                Background
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-cream/70">
+                  Background
+                </span>
+                {sceneId === "custom" && customBg && (
+                  <button
+                    type="button"
+                    onClick={() => setIsAdjustingBg((prev) => !prev)}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
+                      isAdjustingBg
+                        ? "bg-coral text-plum-deep"
+                        : "border border-cream/20 bg-plum/60 text-cream/80 hover:text-cream"
+                    }`}
+                  >
+                    <SlidersHorizontal className="size-3" />
+                    <span>{isAdjustingBg ? "Done Adjusting" : "Adjust Position"}</span>
+                  </button>
+                )}
+              </div>
+
               <div
-                className="grid grid-cols-2 gap-2 sm:gap-3"
+                className="grid grid-cols-3 gap-2 sm:gap-3"
                 role="group"
                 aria-label="Stage background scenes"
               >
@@ -178,7 +310,10 @@ export default function DressUp() {
                   return (
                     <motion.button
                       key={s.id}
-                      onClick={() => setSceneId(s.id)}
+                      onClick={() => {
+                        setSceneId(s.id);
+                        setIsAdjustingBg(false);
+                      }}
                       aria-pressed={selected}
                       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
                       whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
@@ -193,7 +328,7 @@ export default function DressUp() {
                           src={s.src}
                           alt={s.name}
                           fill
-                          sizes="(max-width: 640px) 45vw, 200px"
+                          sizes="(max-width: 640px) 30vw, 150px"
                           className="object-cover transition-transform duration-200 group-hover:scale-105"
                         />
                       </span>
@@ -221,7 +356,126 @@ export default function DressUp() {
                     </motion.button>
                   );
                 })}
+
+                {/* Custom Background Option Tile */}
+                <motion.button
+                  type="button"
+                  onClick={() => {
+                    if (customBg) {
+                      setSceneId("custom");
+                    } else {
+                      fileInputRef.current?.click();
+                    }
+                  }}
+                  aria-pressed={sceneId === "custom"}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                  className={`group relative rounded-2xl border p-1 transition-colors duration-150 ease-out ${
+                    sceneId === "custom"
+                      ? "border-coral bg-coral/15 ring-2 ring-coral/40"
+                      : "border-cream/15 bg-plum hover:border-cream/40"
+                  }`}
+                >
+                  <span className="relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl bg-plum-deep/50">
+                    {customBg ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={customBg.src}
+                        alt="Custom"
+                        className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-coral">
+                        <ImagePlus className="size-5" />
+                        <span className="text-[10px] font-bold">Upload</span>
+                      </div>
+                    )}
+                  </span>
+                  <span
+                    className={`mt-1.5 block truncate px-1 text-center text-xs font-semibold ${
+                      sceneId === "custom" ? "text-coral" : "text-cream/80"
+                    }`}
+                  >
+                    {customBg ? "Custom" : "+ Custom"}
+                  </span>
+                  <AnimatePresence>
+                    {sceneId === "custom" && (
+                      <motion.span
+                        initial={shouldReduceMotion ? false : { scale: 0.3, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.3, opacity: 0 }}
+                        transition={{ type: "spring", duration: 0.3, bounce: 0.2 }}
+                        aria-hidden
+                        className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-coral text-[11px] font-bold text-plum-deep shadow-md"
+                      >
+                        ✓
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </div>
+
+              {/* Interactive Pan & Zoom Controls for Custom Background */}
+              <AnimatePresence>
+                {sceneId === "custom" && customBg && isAdjustingBg && (
+                  <motion.div
+                    initial={shouldReduceMotion ? false : { opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-2 flex flex-col gap-2.5 rounded-2xl border border-cream/20 bg-plum/70 p-3 backdrop-blur-md"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-cream">
+                        Background Zoom & Pan
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="text-xs font-semibold text-coral hover:underline"
+                        >
+                          Change Photo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResetBgPosition}
+                          className="flex items-center gap-1 text-xs text-cream/70 hover:text-cream"
+                        >
+                          <RotateCcw className="size-3" />
+                          <span>Reset</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Zoom slider */}
+                    <div className="flex items-center gap-3">
+                      <ZoomIn className="size-4 text-cream/60 shrink-0" />
+                      <input
+                        type="range"
+                        min="1"
+                        max="2.2"
+                        step="0.05"
+                        value={customBg.scale}
+                        onChange={(e) =>
+                          setCustomBg((prev) =>
+                            prev ? { ...prev, scale: parseFloat(e.target.value) } : null
+                          )
+                        }
+                        aria-label="Background zoom scale"
+                        className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-cream/20 accent-coral"
+                      />
+                      <span className="w-9 text-right text-xs font-bold text-cream/80">
+                        {customBg.scale.toFixed(1)}x
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-cream/60">
+                      💡 <strong>Tip:</strong> Drag directly on the stage preview above to pan the background into position.
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Wardrobe */}

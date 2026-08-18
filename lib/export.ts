@@ -1,4 +1,4 @@
-import { SavedLook } from "./types";
+import { CharacterId, CustomKaosData, SavedLook } from "./types";
 import { characters, itemById, layerOrder } from "../data/characters";
 import { sceneById } from "../data/assets";
 
@@ -20,17 +20,14 @@ function drawImageProp(
   w: number,
   h: number,
   offsetX = 0.5,
-  offsetY = 0.5
+  offsetY = 0.5,
+  scale = 1
 ) {
   const iw = img.width;
   const ih = img.height;
-  const r = Math.min(w / iw, h / ih);
+  const r = Math.min(w / iw, h / ih) * scale;
   let nw = iw * r;
   let nh = ih * r;
-  let cx = 0;
-  let cy = 0;
-  let cw = iw;
-  let ch = ih;
 
   if (nw < w) {
     const r2 = w / nw;
@@ -43,32 +40,91 @@ function drawImageProp(
     nw = nw * r2;
   }
 
-  cx = (iw - (w / nw) * iw) * offsetX;
-  cy = (ih - (h / nh) * ih) * offsetY;
-  cw = (w / nw) * iw;
-  ch = (h / nh) * ih;
+  const cw = (w / nw) * iw;
+  const ch = (h / nh) * ih;
+  const cx = Math.max(0, Math.min(iw - cw, (iw - cw) * offsetX));
+  const cy = Math.max(0, Math.min(ih - ch, (ih - ch) * offsetY));
 
   ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
 }
 
+function drawCustomKaos(
+  ctx: CanvasRenderingContext2D,
+  charId: CharacterId,
+  kaosData: import("@/lib/types").CustomKaosData | undefined,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  imgMap: Map<string, HTMLImageElement>
+) {
+  const baseMaskSrc = `/assets/lufs/characters/custom-kaos/base-kaos-${charId}.png`;
+  const outlineSrc = `/assets/lufs/characters/custom-kaos/outline-kaos-${charId}.png`;
+  const baseMaskImg = imgMap.get(baseMaskSrc);
+  const outlineImg = imgMap.get(outlineSrc);
+
+  if (!baseMaskImg) return;
+
+  const offCanvas = document.createElement("canvas");
+  offCanvas.width = 990;
+  offCanvas.height = 1400;
+  const offCtx = offCanvas.getContext("2d");
+  if (!offCtx) return;
+
+  // 1. Draw Base Silhouette
+  offCtx.drawImage(baseMaskImg, 0, 0, 990, 1400);
+
+  // 2. Fill with Base Color
+  offCtx.globalCompositeOperation = "source-in";
+  offCtx.fillStyle = kaosData?.color || "#ffffff";
+  offCtx.fillRect(0, 0, 990, 1400);
+
+  // 3. Draw Artwork if present
+  if (kaosData?.artworkSrc) {
+    const artImg = imgMap.get(kaosData.artworkSrc);
+    if (artImg) {
+      offCtx.drawImage(artImg, 0, 0, 990, 1400);
+    }
+  }
+
+  // 4. Draw Fabric Outlines on top
+  offCtx.globalCompositeOperation = "source-over";
+  if (outlineImg) {
+    offCtx.drawImage(outlineImg, 0, 0, 990, 1400);
+  }
+
+  // 5. Blit onto target canvas
+  ctx.drawImage(offCanvas, x, y, w, h);
+}
+
 export async function downloadSavedLook(look: SavedLook): Promise<void> {
   const scene = sceneById.get(look.sceneId);
-  if (!scene) {
+  const sceneSrc = look.customScene?.src || scene?.src;
+  if (!sceneSrc) {
     throw new Error("Scene not found");
   }
 
   // 1. Gather all image sources to load in parallel
-  const urls: string[] = [scene.src];
+  const urls: string[] = [sceneSrc];
 
   const charLayers = characters.map((c) => {
+    const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
     const worn = layerOrder
       .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
       .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
 
+    if (isCustomKaos) {
+      urls.push(`/assets/lufs/characters/custom-kaos/base-kaos-${c.id}.png`);
+      urls.push(`/assets/lufs/characters/custom-kaos/outline-kaos-${c.id}.png`);
+      const art = look.customKaos?.[c.id]?.artworkSrc;
+      if (art) urls.push(art);
+    }
+
     return {
       c,
+      isCustomKaos,
       baseSrc: c.baseSrc,
-      wornSrcs: worn.map((item) => item.src),
+      wornSrcs: worn.filter((item) => item.src !== "custom").map((item) => item.src),
     };
   });
 
@@ -101,10 +157,13 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
     throw new Error("Failed to get 2D canvas context");
   }
 
-  // Draw background scene
-  const sceneImg = imgMap.get(scene.src);
+  // Draw background scene with custom pan / scale offsets
+  const sceneImg = imgMap.get(sceneSrc);
   if (sceneImg) {
-    drawImageProp(ctx, sceneImg, 0, 0, W, H);
+    const offX = (look.customScene?.posX ?? 50) / 100;
+    const offY = (look.customScene?.posY ?? 50) / 100;
+    const scale = look.customScene?.scale ?? 1;
+    drawImageProp(ctx, sceneImg, 0, 0, W, H, offX, offY, scale);
   } else {
     // Fallback if background fails to load
     ctx.fillStyle = "#241a25";
@@ -130,17 +189,34 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
     const x = startX + index * (charWidth - overlap);
     const y = H - charHeight;
 
-    // Draw base
+    // 1. Draw base character
     const baseImg = imgMap.get(cl.baseSrc);
     if (baseImg) {
       ctx.drawImage(baseImg, x, y, charWidth, charHeight);
     }
 
-    // Draw worn clothing/accessory layers
-    cl.wornSrcs.forEach((src) => {
-      const layerImg = imgMap.get(src);
-      if (layerImg) {
-        ctx.drawImage(layerImg, x, y, charWidth, charHeight);
+    // 2. Draw layers in strict stack order (hair -> shoes -> one-piece -> bottom -> top -> accessory)
+    layerOrder.forEach((slot) => {
+      if (slot === "top" && cl.isCustomKaos) {
+        drawCustomKaos(
+          ctx,
+          cl.c.id,
+          look.customKaos?.[cl.c.id],
+          x,
+          y,
+          charWidth,
+          charHeight,
+          imgMap
+        );
+      } else {
+        const itemId = look.looks[cl.c.id]?.[slot];
+        const item = itemId ? itemById.get(itemId) : undefined;
+        if (item && item.characterId === cl.c.id && item.src !== "custom") {
+          const layerImg = imgMap.get(item.src);
+          if (layerImg) {
+            ctx.drawImage(layerImg, x, y, charWidth, charHeight);
+          }
+        }
       }
     });
   });
@@ -159,22 +235,32 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
 /** Render a 1080x1920 Instagram Story using public/insta-story-template.png */
 export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLCanvasElement> {
   const scene = sceneById.get(look.sceneId);
-  if (!scene) {
+  const sceneSrc = look.customScene?.src || scene?.src;
+  if (!sceneSrc) {
     throw new Error("Scene not found");
   }
 
   const templateSrc = "/insta-story-template.png";
-  const urls: string[] = [templateSrc, scene.src];
+  const urls: string[] = [templateSrc, sceneSrc];
 
   const charLayers = characters.map((c) => {
+    const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
     const worn = layerOrder
       .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
       .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
 
+    if (isCustomKaos) {
+      urls.push(`/assets/lufs/characters/custom-kaos/base-kaos-${c.id}.png`);
+      urls.push(`/assets/lufs/characters/custom-kaos/outline-kaos-${c.id}.png`);
+      const art = look.customKaos?.[c.id]?.artworkSrc;
+      if (art) urls.push(art);
+    }
+
     return {
       c,
+      isCustomKaos,
       baseSrc: c.baseSrc,
-      wornSrcs: worn.map((item) => item.src),
+      wornSrcs: worn.filter((item) => item.src !== "custom").map((item) => item.src),
     };
   });
 
@@ -213,10 +299,13 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
   const frameW = 880;
   const frameH = 1265;
 
-  // 1. Draw Scene Background filling the empty space window
-  const sceneImg = imgMap.get(scene.src);
+  // 1. Draw Scene Background filling the empty space window with custom pan & zoom offsets
+  const sceneImg = imgMap.get(sceneSrc);
   if (sceneImg) {
-    drawImageProp(ctx, sceneImg, frameX, frameY, frameW, frameH);
+    const offX = (look.customScene?.posX ?? 50) / 100;
+    const offY = (look.customScene?.posY ?? 50) / 100;
+    const scale = look.customScene?.scale ?? 1;
+    drawImageProp(ctx, sceneImg, frameX, frameY, frameW, frameH, offX, offY, scale);
   } else {
     ctx.fillStyle = "#241a25";
     ctx.fillRect(frameX, frameY, frameW, frameH);
@@ -248,15 +337,34 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
   charLayers.forEach((cl, index) => {
     const x = startX + index * (charWidth - overlap);
 
+    // 1. Draw base character
     const baseImg = imgMap.get(cl.baseSrc);
     if (baseImg) {
       ctx.drawImage(baseImg, x, y, charWidth, charHeight);
     }
 
-    cl.wornSrcs.forEach((src) => {
-      const layerImg = imgMap.get(src);
-      if (layerImg) {
-        ctx.drawImage(layerImg, x, y, charWidth, charHeight);
+    // 2. Draw layers in strict stack order (hair -> shoes -> one-piece -> bottom -> top -> accessory)
+    layerOrder.forEach((slot) => {
+      if (slot === "top" && cl.isCustomKaos) {
+        drawCustomKaos(
+          ctx,
+          cl.c.id,
+          look.customKaos?.[cl.c.id],
+          x,
+          y,
+          charWidth,
+          charHeight,
+          imgMap
+        );
+      } else {
+        const itemId = look.looks[cl.c.id]?.[slot];
+        const item = itemId ? itemById.get(itemId) : undefined;
+        if (item && item.characterId === cl.c.id && item.src !== "custom") {
+          const layerImg = imgMap.get(item.src);
+          if (layerImg) {
+            ctx.drawImage(layerImg, x, y, charWidth, charHeight);
+          }
+        }
       }
     });
   });
@@ -282,7 +390,9 @@ export async function downloadInstagramStory(look: SavedLook): Promise<void> {
   link.click();
 }
 
-export async function shareInstagramStory(look: SavedLook): Promise<boolean> {
+export type ShareResult = "shared" | "downloaded" | "cancelled";
+
+export async function shareInstagramStory(look: SavedLook): Promise<ShareResult> {
   const canvas = await createInstagramStoryCanvas(look);
   const dateStr = new Date(look.savedAt).toISOString().split("T")[0];
   const filename = `white-chorus-story-${dateStr}-${look.id.slice(0, 6)}.png`;
@@ -291,7 +401,7 @@ export async function shareInstagramStory(look: SavedLook): Promise<boolean> {
     canvas.toBlob(async (blob) => {
       if (!blob) {
         await downloadInstagramStory(look);
-        resolve(false);
+        resolve("downloaded");
         return;
       }
 
@@ -306,12 +416,17 @@ export async function shareInstagramStory(look: SavedLook): Promise<boolean> {
           await navigator.share({
             files: [file],
             title: "White Chorus Outfit",
-            text: "Styled Emir & Friska for the Jakarta afterglow #WhiteChorus #LUFS",
+            text: getStoryShareCaption(look.username),
           });
-          resolve(true);
+          resolve("shared");
           return;
-        } catch {
-          // User cancelled or share failed, fallback to download
+        } catch (err: any) {
+          // If the user cancelled the native share sheet, do not trigger fallback download
+          if (err?.name === "AbortError") {
+            resolve("cancelled");
+            return;
+          }
+          console.warn("Native share error, falling back to download", err);
         }
       }
 
@@ -322,7 +437,7 @@ export async function shareInstagramStory(look: SavedLook): Promise<boolean> {
       link.href = url;
       link.click();
       URL.revokeObjectURL(url);
-      resolve(false);
+      resolve("downloaded");
     }, "image/png");
   });
 }

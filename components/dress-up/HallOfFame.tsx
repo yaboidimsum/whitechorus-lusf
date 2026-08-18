@@ -171,10 +171,32 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     }
   }, [downloadingId]);
 
-  const handleShareStory = useCallback((s: SavedLook, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setStoryModalLook(s);
-  }, []);
+  const handleShareStory = useCallback(
+    async (s: SavedLook, e?: React.MouseEvent) => {
+      if (e) e.stopPropagation();
+      if (sharingId) return;
+      setSharingId(s.id);
+      const toastId = toast.loading("Opening system share sheet...");
+      try {
+        const result = await shareInstagramStory(s);
+        if (result === "shared") {
+          toast.success("Shared successfully!", { id: toastId });
+        } else if (result === "downloaded") {
+          toast.success("Story image saved! Opening share guide...", { id: toastId });
+          setStoryModalLook(s);
+        } else {
+          toast.dismiss(toastId);
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to open share sheet.", { id: toastId });
+        setStoryModalLook(s);
+      } finally {
+        setSharingId(null);
+      }
+    },
+    [sharingId]
+  );
 
   const handleRate = useCallback((id: string, rating: number) => {
     if (isMyLook(id)) {
@@ -339,7 +361,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
                         className="flex min-h-[44px] items-center justify-center gap-2 rounded-2xl bg-coral px-4 py-2.5 text-xs font-bold text-plum-deep shadow-[0_4px_16px_rgba(255,154,131,0.3)] transition-all hover:bg-coral/95 hover:shadow-[0_6px_22px_rgba(255,154,131,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral/40 disabled:opacity-50"
                       >
                         <Share2 className="size-4 shrink-0" />
-                        <span className="truncate">{sharingId === spotlightLook.id ? "Preparing..." : "Share to IG Story"}</span>
+                        <span className="truncate">{sharingId === spotlightLook.id ? "Opening Share Sheet..." : "Share Outfit"}</span>
                       </motion.button>
 
                       {/* Download Action */}

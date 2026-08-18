@@ -293,42 +293,64 @@ export default function InstagramStoryShareModal({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 pt-1">
-                  {/* Primary Action: Open Instagram App */}
-                  <Button
-                    variant="coral"
-                    onClick={handleOpenInstagramApp}
-                    className="w-full text-xs font-bold shadow-[0_4px_16px_rgba(255,154,131,0.3)]"
-                  >
-                    <ExternalLink className="size-4" />
-                    Open Instagram App
-                  </Button>
-
-                  {/* Secondary Action: Save Story Image */}
-                  <Button
-                    variant="outline"
-                    onClick={handleDownload}
-                    disabled={downloading}
-                    className="w-full text-xs font-bold"
-                  >
-                    <Download className="size-4 text-coral" />
-                    {downloading ? "Saving..." : "Save Story Image"}
-                  </Button>
-                </div>
-
-                {/* Native share sheet trigger if supported */}
-                {isNativeShareSupported && (
-                  <div className="text-center pt-1">
-                    <button
-                      type="button"
+                <div className="flex flex-col gap-2 pt-1">
+                  {/* Primary Action: System Share Sheet if supported */}
+                  {isNativeShareSupported ? (
+                    <Button
+                      variant="coral"
                       onClick={handleShare}
                       disabled={sharing}
-                      className="text-[11px] font-semibold text-coral underline hover:text-coral/80"
+                      className="w-full text-xs font-bold shadow-[0_4px_16px_rgba(255,154,131,0.3)] gap-1.5"
                     >
-                      {sharing ? "Opening..." : "Or open via System Share Sheet"}
-                    </button>
+                      <Share2 className="size-4" />
+                      {sharing ? "Opening System Share..." : "Share via System Share Sheet"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="coral"
+                      onClick={handleOpenInstagramApp}
+                      className="w-full text-xs font-bold shadow-[0_4px_16px_rgba(255,154,131,0.3)] gap-1.5"
+                    >
+                      <ExternalLink className="size-4" />
+                      Open Instagram App
+                    </Button>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Secondary Action: Save Story Image */}
+                    <Button
+                      variant="outline"
+                      onClick={handleDownload}
+                      disabled={downloading}
+                      className="w-full text-xs font-bold gap-1.5"
+                    >
+                      <Download className="size-4 text-coral" />
+                      {downloading ? "Saving..." : "Save Image"}
+                    </Button>
+
+                    {/* Secondary Action: Open Instagram App (if primary was share sheet) */}
+                    {isNativeShareSupported ? (
+                      <Button
+                        variant="outline"
+                        onClick={handleOpenInstagramApp}
+                        className="w-full text-xs font-bold gap-1.5"
+                      >
+                        <ExternalLink className="size-4 text-coral" />
+                        Instagram App
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={handleShare}
+                        disabled={sharing}
+                        className="w-full text-xs font-bold gap-1.5"
+                      >
+                        <Share2 className="size-4 text-coral" />
+                        Share Sheet
+                      </Button>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </motion.div>

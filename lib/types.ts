@@ -36,6 +36,36 @@ export interface Scene {
   src: string;
 }
 
+export interface CustomSceneData {
+  /** Base64 data URL or image source */
+  src: string;
+  /** Horizontal position percentage 0-100 (50 = centered) */
+  posX: number;
+  /** Vertical position percentage 0-100 (50 = centered) */
+  posY: number;
+  /** Zoom scale 1.0 to 2.5 */
+  scale: number;
+}
+
+export interface CustomKaosData {
+  /** Mode: pattern upload, freehand paint, or solid color */
+  mode: "pattern" | "paint" | "color";
+  /** PNG / compressed image data URL of the pattern or drawing (projected to 990x1400 full canvas) */
+  artworkSrc?: string;
+  /** High-resolution close-up 600x600 editor artwork for resuming paint editing */
+  editorArtworkSrc?: string;
+  /** Raw pattern source data URL */
+  editorPatternSrc?: string;
+  /** Solid background color (hex string, e.g. "#ffffff") */
+  color?: string;
+  /** Horizontal pan offset percentage 0-100 (50 = centered) */
+  posX?: number;
+  /** Vertical pan offset percentage 0-100 (50 = centered) */
+  posY?: number;
+  /** Zoom scale 1.0 to 2.5 */
+  scale?: number;
+}
+
 /** Selected item id per slot. Partial — unset slots show only the base body. */
 export type Look = Partial<Record<SlotId, string>>;
 
@@ -44,6 +74,10 @@ export interface SavedLook {
   /** Full stage snapshot: both characters + scene. */
   looks: Record<CharacterId, Look>;
   sceneId: string;
+  /** Optional custom background data when sceneId is "custom" */
+  customScene?: CustomSceneData;
+  /** Optional custom t-shirt artwork for Emir and/or Friska */
+  customKaos?: Partial<Record<CharacterId, CustomKaosData>>;
   savedAt: number;
   /** True for the seeded example looks shipped in the Hall of Fame. */
   demo?: boolean;

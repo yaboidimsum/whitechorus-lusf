@@ -163,6 +163,8 @@ export function saveLook(
   sceneId: string,
   username = "Anonymous Stylist",
   rating = 0,
+  customScene?: import("@/lib/types").CustomSceneData,
+  customKaos?: Partial<Record<CharacterId, import("@/lib/types").CustomKaosData>>,
 ): SavedLook {
   const shape = readAll();
   const id = String(shape.nextId);
@@ -172,6 +174,8 @@ export function saveLook(
     id,
     looks,
     sceneId,
+    ...(customScene && sceneId === "custom" ? { customScene } : {}),
+    ...(customKaos && Object.keys(customKaos).length > 0 ? { customKaos } : {}),
     savedAt: Date.now(),
     username: cleanUsername,
     rating: userRate,

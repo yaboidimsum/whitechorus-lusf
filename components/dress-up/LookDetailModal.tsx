@@ -73,17 +73,21 @@ export default function LookDetailModal({
   const handleShareStory = async () => {
     if (sharingStory) return;
     setSharingStory(true);
-    const toastId = toast.loading("Compositing Instagram Story template...");
+    const toastId = toast.loading("Opening system share sheet...");
     try {
-      const shared = await shareInstagramStory(look);
-      if (shared) {
-        toast.success("Ready to share to Instagram Story!", { id: toastId });
+      const result = await shareInstagramStory(look);
+      if (result === "shared") {
+        toast.success("Ready to share!", { id: toastId });
+      } else if (result === "downloaded") {
+        toast.success("Story template saved! Opening guide...", { id: toastId });
+        setShowStoryModal(true);
       } else {
-        toast.success("Instagram Story template downloaded! Ready to share.", { id: toastId });
+        toast.dismiss(toastId);
       }
     } catch (err) {
       console.error(err);
-      toast.error("Failed to generate Story template.", { id: toastId });
+      toast.error("Failed to open share sheet.", { id: toastId });
+      setShowStoryModal(true);
     } finally {
       setSharingStory(false);
     }
@@ -219,11 +223,12 @@ export default function LookDetailModal({
               <div className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 <Button
                   variant="coral"
-                  onClick={() => setShowStoryModal(true)}
+                  onClick={handleShareStory}
+                  disabled={sharingStory}
                   className="w-full text-xs font-bold shadow-[0_4px_16px_rgba(255,154,131,0.25)]"
                 >
                   <Share2 className="size-4" />
-                  Share to IG Story
+                  {sharingStory ? "Opening Share..." : "Share Outfit"}
                 </Button>
 
                 <Button
