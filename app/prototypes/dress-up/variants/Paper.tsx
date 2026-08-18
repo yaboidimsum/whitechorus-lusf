@@ -16,10 +16,10 @@ export function Paper() {
       <div className="proto-entrance mx-auto w-full max-w-md">
         {/* Header */}
         <header className="text-center">
-          <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#e06a6a]">
+          <p className="text-[11px] font-bold tracking-[0.25em] text-[#e06a6a]">
             L.U.F.S. · Dress Up
           </p>
-          <h1 className="mt-1 font-display text-4xl uppercase leading-none tracking-wide text-[#2b1b31]">
+          <h1 className="mt-1 font-display text-4xl leading-none tracking-wide text-[#2b1b31]">
             Sticker studio
           </h1>
           <p className="mt-2 text-sm text-[#6b5b57]">
@@ -73,7 +73,7 @@ export function Paper() {
         {/* Wardrobe as sticker tiles */}
         {character.slots.map((slot) => (
           <div key={slot} className="mt-6">
-            <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#8a7767]">
+            <h3 className="mb-2 text-xs font-bold tracking-[0.14em] text-[#8a7767]">
               {slotLabels[slot]}
             </h3>
             <div className="flex flex-wrap gap-2">

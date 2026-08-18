@@ -47,4 +47,12 @@ export interface SavedLook {
   savedAt: number;
   /** True for the seeded example looks shipped in the Hall of Fame. */
   demo?: boolean;
+  /** Creator username or handle (e.g. "@stylist_jkt"). */
+  username?: string;
+  /** Current user's individual rating from 0 to 5 stars. */
+  rating?: number;
+  /** Average star rating (e.g. 4.8). */
+  ratingAvg?: number;
+  /** Number of people who have rated this outfit. */
+  ratingsCount?: number;
 }

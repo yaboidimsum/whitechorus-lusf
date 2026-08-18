@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { itemsFor, slotLabels } from "@/data/characters";
 import type { Character, Look, SlotId } from "@/lib/types";
 
@@ -14,14 +15,15 @@ interface WardrobeGridProps {
 export default function WardrobeGrid({ character, look, onSelect }: WardrobeGridProps) {
   const [activeSlot, setActiveSlot] = useState<SlotId>(character.slots[0]);
   const options = itemsFor(character.id, activeSlot);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <div>
-      {/* Category tabs */}
+      {/* Category tabs with shared layout sliding indicator */}
       <div
         role="group"
         aria-label="Wardrobe categories"
-        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0"
+        className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0"
       >
         {character.slots.map((slot) => {
           const selected = slot === activeSlot;
@@ -30,40 +32,49 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               key={slot}
               aria-pressed={selected}
               onClick={() => setActiveSlot(slot)}
-              className={`min-h-[44px] shrink-0 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.97] ${
+              className={`relative min-h-[44px] shrink-0 rounded-full px-3.5 py-2 text-xs font-bold tracking-normal transition-colors duration-150 ${
                 selected
-                  ? "border-coral bg-coral text-plum-deep"
-                  : "border-cream/25 text-cream/80 hover:border-cream/60"
+                  ? "text-plum-deep"
+                  : "border border-cream/20 bg-plum/40 text-cream/80 hover:border-cream/50 hover:text-cream"
               }`}
             >
+              {selected && (
+                <motion.div
+                  layoutId={shouldReduceMotion ? undefined : "activeWardrobeTab"}
+                  className="absolute inset-0 z-[-1] rounded-full bg-coral shadow-sm"
+                  transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+                />
+              )}
               {slotLabels[slot]}
             </button>
           );
         })}
       </div>
 
-      {/* Item grid */}
+      {/* Item grid with tactile interactive springs */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {options.map((item) => {
           const selected = look[item.slot] === item.id;
           return (
-            <button
+            <motion.button
               key={item.id}
               onClick={() => onSelect(item.slot, item.id)}
               aria-pressed={selected}
-              className={`group relative rounded-2xl border p-1 transition-[transform,colors] duration-150 ease-out-quart active:scale-[0.96] ${
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+              className={`group relative rounded-2xl border p-1 transition-colors duration-150 ease-out ${
                 selected
-                  ? "border-coral bg-coral/10"
+                  ? "border-coral bg-coral/15 ring-2 ring-coral/40"
                   : "border-cream/15 bg-plum hover:border-cream/40"
               }`}
             >
-              <span className="relative block aspect-square w-full overflow-hidden rounded-xl">
+              <span className="relative block aspect-square w-full overflow-hidden rounded-xl bg-plum-deep/30">
                 <Image
                   src={item.thumb}
                   alt=""
                   fill
                   sizes="(max-width: 480px) 30vw, 120px"
-                  className="object-contain p-1"
+                  className="object-contain p-1 transition-transform duration-200 group-hover:scale-105"
                 />
               </span>
               <span
@@ -73,15 +84,21 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
               >
                 {item.name}
               </span>
-              {selected ? (
-                <span
-                  aria-hidden
-                  className="animate-enter absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-coral text-[11px] font-bold text-plum-deep"
-                >
-                  ✓
-                </span>
-              ) : null}
-            </button>
+              <AnimatePresence>
+                {selected && (
+                  <motion.span
+                    initial={shouldReduceMotion ? false : { scale: 0.3, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.3, opacity: 0 }}
+                    transition={{ type: "spring", duration: 0.3, bounce: 0.2 }}
+                    aria-hidden
+                    className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-coral text-[11px] font-bold text-plum-deep shadow-md"
+                  >
+                    ✓
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
           );
         })}
       </div>

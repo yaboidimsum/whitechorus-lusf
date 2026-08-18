@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "motion/react";
 import {
   characters,
   itemById,
@@ -71,6 +72,7 @@ function CharacterFigure({
   active: boolean;
   index: number;
 }) {
+  const shouldReduceMotion = useReducedMotion();
   const worn = layerOrder
     .map((slot) => itemById.get(look[slot] ?? ""))
     .filter(
@@ -85,24 +87,24 @@ function CharacterFigure({
   }`;
 
   return (
-    <figure
+    <motion.figure
       role="img"
       aria-label={description}
+      animate={
+        shouldReduceMotion
+          ? { opacity: active ? 1 : 0.9 }
+          : {
+              y: active ? -6 : 0,
+              opacity: active ? 1 : 0.88,
+            }
+      }
+      transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}
       className={`
         relative
         w-[66%]
         shrink-0
-        transition-[transform,opacity]
-        duration-200
-        ease-in-out-quart
-
         ${index === 1 ? "-ml-[8%]" : ""}
-
-        ${
-          active
-            ? "z-20 -translate-y-1"
-            : "z-10 opacity-90"
-        }
+        ${active ? "z-20" : "z-10"}
       `}
     >
       <div className="relative aspect-[990/1400] w-full">
@@ -140,6 +142,6 @@ function CharacterFigure({
           }),
         )}
       </div>
-    </figure>
+    </motion.figure>
   );
 }

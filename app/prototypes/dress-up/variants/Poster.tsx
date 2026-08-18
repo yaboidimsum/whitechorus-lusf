@@ -19,7 +19,7 @@ export function Poster() {
       <div className="proto-entrance mx-auto max-w-4xl">
         {/* Masthead */}
         <header className="border-b border-cream/15 pb-6">
-          <p className="font-display text-5xl uppercase leading-[0.9] tracking-wide text-cream sm:text-7xl">
+          <p className="font-display text-5xl leading-[0.9] tracking-wide text-cream sm:text-7xl">
             Dress
             <br />
             the duo
@@ -47,7 +47,7 @@ export function Poster() {
         {/* Controls as index */}
         <div className="mt-12 grid gap-10 sm:grid-cols-2">
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-cream/40">
+            <h3 className="text-[11px] font-bold tracking-[0.2em] text-cream/40">
               Who
             </h3>
             <div className="mt-3 divide-y divide-cream/10 border-y border-cream/10">
@@ -60,7 +60,7 @@ export function Poster() {
                     c.id === activeId ? "text-coral" : "text-cream/80 hover:text-cream"
                   }`}
                 >
-                  <span className="font-display text-2xl uppercase tracking-wide">
+                  <span className="font-display text-2xl tracking-wide">
                     {c.name}
                   </span>
                   <span className="text-xs text-cream/40">{c.fullName}</span>
@@ -70,7 +70,7 @@ export function Poster() {
           </div>
 
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-cream/40">
+            <h3 className="text-[11px] font-bold tracking-[0.2em] text-cream/40">
               Scene
             </h3>
             <div className="mt-3 flex gap-3">
@@ -91,7 +91,7 @@ export function Poster() {
 
           {character.slots.map((slot) => (
             <div key={slot}>
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-cream/40">
+              <h3 className="text-[11px] font-bold tracking-[0.2em] text-cream/40">
                 {slotLabels[slot]}
               </h3>
               <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">

@@ -6,7 +6,7 @@ export const characters: Character[] = [
     name: "Emir",
     fullName: "Emir Agung Mahendra",
     baseSrc: "/assets/lufs/characters/emir/base.png",
-    slots: ["top", "bottom", "shoes", "accessory"],
+    slots: ["top", "bottom", "shoes"],
   },
   {
     id: "friska",
@@ -35,7 +35,7 @@ export const wardrobe: WardrobeItem[] = [
   { id: "emir-bottom-joggers", characterId: "emir", slot: "bottom", name: "Joggers", src: `${A}/emir/bottom-joggers.png`, thumb: `${A}/emir/bottom-joggers.thumb.png` },
   { id: "emir-shoes-high-tops", characterId: "emir", slot: "shoes", name: "High-Tops", src: `${A}/emir/shoes-high-tops.png`, thumb: `${A}/emir/shoes-high-tops.thumb.png` },
   { id: "emir-shoes-boots", characterId: "emir", slot: "shoes", name: "Boots", src: `${A}/emir/shoes-boots.png`, thumb: `${A}/emir/shoes-boots.thumb.png` },
-  { id: "emir-accessory-masks", characterId: "emir", slot: "accessory", name: "Party Masks", src: `${A}/emir/accessory-masks.png`, thumb: `${A}/emir/accessory-masks.thumb.png` },
+  { id: "emir-accessory-masks", characterId: "emir", slot: "shoes", name: "Party Masks", src: `${A}/emir/accessory-masks.png`, thumb: `${A}/emir/accessory-masks.thumb.png` },
 
   // Friska
   { id: "friska-top-halter", characterId: "friska", slot: "top", name: "Halter Top", src: `${A}/friska/top-halter.png`, thumb: `${A}/friska/top-halter.thumb.png` },

@@ -27,7 +27,7 @@ export function Machine() {
             height={56}
             className="opacity-90"
           />
-          <p className="font-display text-xl uppercase tracking-wide text-coral">
+          <p className="font-display text-xl tracking-wide text-coral">
             Dress Up Machine
           </p>
         </div>
@@ -59,7 +59,7 @@ export function Machine() {
                 key={c.id}
                 onClick={() => setActiveId(c.id)}
                 aria-pressed={c.id === activeId}
-                className={`rounded-xl border-2 px-4 py-3 text-sm font-bold uppercase tracking-[0.1em] transition-transform active:translate-y-0.5 ${
+                className={`rounded-xl border-2 px-4 py-3 text-sm font-bold tracking-[0.1em] transition-transform active:translate-y-0.5 ${
                   c.id === activeId
                     ? "border-coral bg-coral text-plum-deep"
                     : "border-cream/30 text-cream/85 hover:border-cream/60"
@@ -90,7 +90,7 @@ export function Machine() {
           <div className="mt-4 space-y-3">
             {character.slots.map((slot) => (
               <div key={slot}>
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-cream/45">
+                <p className="mb-1 text-[10px] font-bold tracking-[0.16em] text-cream/45">
                   {slotLabels[slot]}
                 </p>
                 <div className="flex flex-wrap gap-1.5">

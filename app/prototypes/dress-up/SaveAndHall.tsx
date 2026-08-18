@@ -21,7 +21,7 @@ export function SaveAndHall({
         type="submit"
         onClick={save}
         disabled={!hasSelection || saving}
-        className="flex-1 rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold uppercase tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
+        className="flex-1 rounded-full bg-coral px-5 py-3.5 text-sm font-extrabold tracking-[0.14em] text-plum-deep transition-[transform,opacity] duration-150 ease-out-quart hover:opacity-85 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100"
       >
         {saving ? "Saving…" : "Save Outfit"}
       </button>
