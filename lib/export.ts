@@ -203,18 +203,17 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
     throw new Error("Failed to get canvas 2D context");
   }
 
-  // Viewport inside template: x: 97, y: 331, width: 880, height: 1173
-  const frameX = 97;
-  const frameY = 331;
+  // Canvas dimensions: 1080 x 1920
+  const W = 1080;
+  const H = 1920;
+
+  // Template cutout viewport: x: 98, y: 332, width: 880, height: 1265
+  const frameX = 98;
+  const frameY = 332;
   const frameW = 880;
-  const frameH = 1173;
+  const frameH = 1265;
 
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(frameX, frameY, frameW, frameH);
-  ctx.clip();
-
-  // 1. Draw Scene Background in the viewport
+  // 1. Draw Scene Background filling the empty space window
   const sceneImg = imgMap.get(scene.src);
   if (sceneImg) {
     drawImageProp(ctx, sceneImg, frameX, frameY, frameW, frameH);
@@ -223,7 +222,7 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
     ctx.fillRect(frameX, frameY, frameW, frameH);
   }
 
-  // 2. Draw Vignette in the viewport
+  // 2. Draw Vignette in the empty space window matching the stage
   const grad = ctx.createRadialGradient(
     frameX + frameW / 2,
     frameY + frameH * 0.2,
@@ -238,16 +237,16 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
   ctx.fillStyle = grad;
   ctx.fillRect(frameX, frameY, frameW, frameH);
 
-  // 3. Draw Characters inside viewport
-  const charWidth = 0.66 * frameW; // 580.8px
-  const charHeight = (1400 / 990) * charWidth; // 821.3px
-  const overlap = 0.08 * frameW; // 70.4px
+  // 3. Draw Characters positioned and scaled matching the original 4:5 image, lifted slightly higher
+  const charWidth = 0.66 * frameW; // 580.8px (matching original 66% width ratio)
+  const charHeight = (1400 / 990) * charWidth; // 821.33px
+  const overlap = 0.08 * frameW; // 70.4px (matching original 8% overlap)
   const totalWidth = charWidth * 2 - overlap; // 1091.2px
-  const startX = frameX + (frameW - totalWidth) / 2; // -8.6px
+  const startX = frameX + (frameW - totalWidth) / 2; // Centered in the cutout window
+  const y = frameY + frameH - charHeight - 65; // Lifted higher for balanced vertical composition
 
   charLayers.forEach((cl, index) => {
     const x = startX + index * (charWidth - overlap);
-    const y = frameY + frameH - charHeight;
 
     const baseImg = imgMap.get(cl.baseSrc);
     if (baseImg) {
@@ -262,12 +261,10 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
     });
   });
 
-  ctx.restore();
-
-  // 4. Draw Template Frame on top
+  // 4. Draw Template Frame on top (overlaying on top of background & characters)
   const templateImg = imgMap.get(templateSrc);
   if (templateImg) {
-    ctx.drawImage(templateImg, 0, 0, 1080, 1920);
+    ctx.drawImage(templateImg, 0, 0, W, H);
   }
 
   return canvas;

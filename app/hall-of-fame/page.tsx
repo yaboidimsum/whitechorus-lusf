@@ -12,7 +12,7 @@ export default function HallOfFamePage() {
             Hall of Fame
           </h1>
           <p className="mx-auto mt-2 max-w-md text-pretty text-sm text-cream/75">
-            Your saved looks, kept private in your browser.
+            Browse outfits created by the community and publish your own styled looks.
           </p>
         </header>
         <HallOfFame variant="full" />

@@ -116,9 +116,18 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
   );
   const previewLooks = savedLooks.slice(-3).reverse();
 
-  // Find spotlight look: justSavedId if present, or newest look
-  const newestFirst = [...savedLooks].reverse();
-  const spotlightLook = (justSavedId ? savedLooks.find((s) => s.id === justSavedId) : null) ?? newestFirst[0] ?? null;
+  // Find spotlight look: ONLY displayed if the current user has uploaded their own outfit.
+  // If the current user has not uploaded any outfit, spotlightLook is null (TOP SHOW is empty).
+  const myLooks = useMemo(() => {
+    return savedLooks.filter((l) => isMyLook(l.id));
+  }, [savedLooks]);
+
+  const hasUserUploaded = myLooks.length > 0;
+  const userNewestLook = hasUserUploaded ? myLooks[myLooks.length - 1] : null;
+
+  const spotlightLook = hasUserUploaded
+    ? (justSavedId ? myLooks.find((s) => s.id === justSavedId) : null) ?? userNewestLook
+    : null;
   const isSpotlightMine = spotlightLook ? isMyLook(spotlightLook.id) : false;
 
   const handleDelete = useCallback((id: string, e?: React.MouseEvent) => {
@@ -251,7 +260,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
                       <Sparkles className="size-3.5" />
                       {justSavedId === spotlightLook.id
                         ? "🎉 Successfully Published to Hall of Fame!"
-                        : "✨ Spotlight Submission"}
+                        : "✨ Your Spotlight Submission"}
                     </div>
 
                     {/* Stage Preview Container */}
