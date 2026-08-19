@@ -68,6 +68,13 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     setPage(0);
   };
 
+  // Determine if the current user has uploaded their own outfits
+  const myLooks = useMemo(() => {
+    return savedLooks.filter((l) => isMyLook(l.id));
+  }, [savedLooks]);
+
+  const hasUserUploaded = myLooks.length > 0;
+
   const handleSortChange = (val: string) => {
     setSortBy(val);
     setPage(0);
@@ -75,6 +82,11 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
 
   const filteredAndSortedLooks = useMemo(() => {
     let list = [...savedLooks];
+
+    // If current user hasn't uploaded any outfit, only show outfits uploaded by people (exclude demo looks)
+    if (!hasUserUploaded) {
+      list = list.filter((item) => !item.demo);
+    }
 
     // Filter by username search (using deferredSearchQuery for smooth typing)
     if (deferredSearchQuery.trim()) {
@@ -106,7 +118,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     });
 
     return list;
-  }, [savedLooks, deferredSearchQuery, sortBy]);
+  }, [savedLooks, deferredSearchQuery, sortBy, hasUserUploaded]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedLooks.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);
@@ -118,11 +130,6 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
 
   // Find spotlight look: ONLY displayed if the current user has uploaded their own outfit.
   // If the current user has not uploaded any outfit, spotlightLook is null (TOP SHOW is empty).
-  const myLooks = useMemo(() => {
-    return savedLooks.filter((l) => isMyLook(l.id));
-  }, [savedLooks]);
-
-  const hasUserUploaded = myLooks.length > 0;
   const userNewestLook = hasUserUploaded ? myLooks[myLooks.length - 1] : null;
 
   const spotlightLook = hasUserUploaded

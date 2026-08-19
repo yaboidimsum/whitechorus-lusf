@@ -48,8 +48,8 @@ export const wardrobe: WardrobeItem[] = [
   { id: "friska-bottom-button", characterId: "friska", slot: "bottom", name: "Button Skirt", src: `${A}/friska/bottom-button.png`, thumb: `${I}/icon_friska_bottoms2.png` },
   { id: "friska-bottom-jeans", characterId: "friska", slot: "bottom", name: "Wide-Leg Jeans", src: `${A}/friska/bottom-jeans.png`, thumb: `${I}/icon_friska_bottoms1.png` },
   { id: "friska-shoes-high-tops", characterId: "friska", slot: "shoes", name: "High-Tops", src: `${A}/friska/shoes-high-tops.png`, thumb: `${I}/icon_friska_shoes1.png` },
-  { id: "friska-shoes-knee-boots", characterId: "friska", slot: "shoes", name: "Knee Boots", src: `${A}/friska/shoes-knee-boots.png`, thumb: `${I}/icon_friska_shoes2.png` },
-  { id: "friska-shoes-cowboy", characterId: "friska", slot: "shoes", name: "Cowboy Boots", src: `${A}/friska/shoes-cowboy.png`, thumb: `${I}/icon_friska_shoes3.png` },
+  { id: "friska-shoes-knee-boots", characterId: "friska", slot: "shoes", name: "Knee Boots", src: `${A}/friska/shoes-knee-boots.png`, thumb: `${I}/icon_friska_shoes3.png` },
+  { id: "friska-shoes-cowboy", characterId: "friska", slot: "shoes", name: "Cowboy Boots", src: `${A}/friska/shoes-cowboy.png`, thumb: `${I}/icon_friska_shoes2.png` },
 ];
 
 export const slotLabels: Record<SlotId, string> = {
