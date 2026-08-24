@@ -1,5 +1,5 @@
 import { CharacterId, CustomKaosData, SavedLook } from "./types";
-import { characters, itemById, layerOrder } from "../data/characters";
+import { characters, getCharacterBaseSrc, itemById, layerOrder } from "../data/characters";
 import { sceneById } from "../data/assets";
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -123,7 +123,7 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
     return {
       c,
       isCustomKaos,
-      baseSrc: c.baseSrc,
+      baseSrc: getCharacterBaseSrc(c.id, look.looks[c.id]?.hair),
       wornSrcs: worn.filter((item) => item.src !== "custom").map((item) => item.src),
     };
   });
@@ -195,8 +195,9 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
       ctx.drawImage(baseImg, x, y, charWidth, charHeight);
     }
 
-    // 2. Draw layers in strict stack order (hair -> shoes -> one-piece -> bottom -> top -> accessory)
+    // 2. Draw layers in strict stack order (shoes -> one-piece -> bottom -> top -> accessory)
     layerOrder.forEach((slot) => {
+      if (slot === "hair") return;
       if (slot === "top" && cl.isCustomKaos) {
         drawCustomKaos(
           ctx,
@@ -259,7 +260,7 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
     return {
       c,
       isCustomKaos,
-      baseSrc: c.baseSrc,
+      baseSrc: getCharacterBaseSrc(c.id, look.looks[c.id]?.hair),
       wornSrcs: worn.filter((item) => item.src !== "custom").map((item) => item.src),
     };
   });
@@ -343,8 +344,9 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
       ctx.drawImage(baseImg, x, y, charWidth, charHeight);
     }
 
-    // 2. Draw layers in strict stack order (hair -> shoes -> one-piece -> bottom -> top -> accessory)
+    // 2. Draw layers in strict stack order (shoes -> one-piece -> bottom -> top -> accessory)
     layerOrder.forEach((slot) => {
+      if (slot === "hair") return;
       if (slot === "top" && cl.isCustomKaos) {
         drawCustomKaos(
           ctx,

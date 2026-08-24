@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { characters, itemById, layerOrder } from "@/data/characters";
+import { characters, getCharacterBaseSrc, itemById, layerOrder } from "@/data/characters";
 import { sceneById } from "@/data/assets";
 import type { SavedLook } from "@/lib/types";
 
@@ -62,15 +62,16 @@ export default function LookPreview({ look }: { look: SavedLook }) {
             >
               <div className="relative aspect-[990/1400] w-full">
                 <Image
-                  src={c.baseSrc}
+                  src={getCharacterBaseSrc(c.id, look.looks[c.id]?.hair)}
                   alt=""
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
                   className="object-contain"
                 />
 
-                {/* Wardrobe layers in strict stack order (hair -> shoes -> one-piece -> bottom -> top -> accessory) */}
+                {/* Wardrobe layers in strict stack order (shoes -> one-piece -> bottom -> top -> accessory) */}
                 {layerOrder.map((slot) => {
+                  if (slot === "hair") return null;
                   if (slot === "top" && isCustomKaos) {
                     return (
                       <div key="custom-kaos-layer" className="absolute inset-0 pointer-events-none select-none">

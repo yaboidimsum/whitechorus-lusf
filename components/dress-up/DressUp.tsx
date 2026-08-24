@@ -16,28 +16,31 @@ import type { CharacterId, CustomKaosData, CustomSceneData, Look, Scene, SlotId 
 import CharacterStage from "./CharacterStage";
 import WardrobeGrid from "./WardrobeGrid";
 import CustomKaosModal from "./CustomKaosModal";
+import AuthModal from "@/components/auth/AuthModal";
+import { useUser } from "@/hooks/use-user";
 
 const emptyLooks = (): Record<CharacterId, Look> => ({ emir: {}, friska: {} });
 
 export default function DressUp() {
   const router = useRouter();
+  const { user, profile } = useUser();
   const [activeId, setActiveId] = useState<CharacterId>("emir");
   const [looks, setLooks] = useState<Record<CharacterId, Look>>(emptyLooks);
   const [sceneId, setSceneId] = useState(scenes[0].id);
   const [customBg, setCustomBg] = useState<CustomSceneData | null>(null);
   const [customKaos, setCustomKaos] = useState<Partial<Record<CharacterId, CustomKaosData>>>({});
   const [showKaosModal, setShowKaosModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isAdjustingBg, setIsAdjustingBg] = useState(false);
   const [announcement, setAnnouncement] = useState("");
-  const [mounted, setMounted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [username, setUsername] = useState("");
+  const [lookTitle, setLookTitle] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
-    setMounted(true);
     const savedName = localStorage.getItem("stylist:username");
     if (savedName) setUsername(savedName);
 
@@ -63,7 +66,9 @@ export default function DressUp() {
     setLooks((prev) => {
       const current = prev[activeId];
       const next: Look = { ...current };
-      if (next[slot] === itemId) {
+      if (slot === "hair") {
+        next.hair = itemId;
+      } else if (next[slot] === itemId) {
         delete next[slot]; // tap again to undress
       } else {
         next[slot] = itemId;
@@ -143,6 +148,11 @@ export default function DressUp() {
 
   const handleOpenSave = () => {
     if (!hasSelection) return;
+    if (!user) {
+      toast.error("Please sign in to save your outfit to the Hall of Fame!");
+      setShowAuthModal(true);
+      return;
+    }
     setShowSaveModal(true);
   };
 
@@ -156,23 +166,44 @@ export default function DressUp() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showSaveModal]);
 
-  const handleConfirmSave = (e?: React.FormEvent) => {
+  const handleConfirmSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (saving) return;
+    if (!user) {
+      toast.error("Please sign in to save your outfit!");
+      setShowSaveModal(false);
+      setShowAuthModal(true);
+      return;
+    }
     setSaving(true);
-    const cleanName = username.trim() || "Anonymous Stylist";
+    const cleanName = profile?.username
+      ? `@${profile.username}`
+      : username.trim()
+      ? username.startsWith("@")
+        ? username.trim()
+        : `@${username.trim()}`
+      : "@stylist";
+
     try {
       localStorage.setItem("stylist:username", cleanName);
     } catch {
       // localStorage error fallback
     }
 
-    const saved = saveLook(looks, sceneId, cleanName, 0, customBg || undefined, customKaos);
+    const saved = await saveLook(
+      looks,
+      sceneId,
+      cleanName,
+      0,
+      customBg || undefined,
+      customKaos,
+      lookTitle.trim() || "Untitled Look"
+    );
     setAnnouncement("Outfit saved to the Hall of Fame.");
     toast.success("Outfit saved to the Hall of Fame!");
     setShowSaveModal(false);
     setSaving(false);
-    
+
     // Redirect to Hall of Fame with justSaved highlight parameter
     router.push(`/hall-of-fame?justSaved=${saved.id}`);
   };
@@ -487,7 +518,7 @@ export default function DressUp() {
                 variant="coral"
                 size="lg"
                 onClick={handleOpenSave}
-                disabled={!mounted || !hasSelection || saving}
+                disabled={!hasSelection || saving}
                 className="w-full"
               >
                 {saving ? "Saving..." : "Save Outfit"}
@@ -575,28 +606,51 @@ export default function DressUp() {
                 className="mt-4 flex flex-col gap-4"
               >
                 <div>
-                  <label htmlFor="stylist-username" className="block text-xs font-bold tracking-normal text-cream/80">
-                    Stylist / Creator Username
+                  <label htmlFor="outfit-title" className="block text-xs font-bold tracking-normal text-cream/80">
+                    Outfit Version Title
                   </label>
                   <div className="mt-1.5 relative">
                     <input
-                      id="stylist-username"
+                      id="outfit-title"
                       type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="@yourname or handle"
-                      maxLength={30}
+                      value={lookTitle}
+                      onChange={(e) => setLookTitle(e.target.value)}
+                      placeholder="e.g. Night Club Glow, Cyber Afterglow..."
+                      maxLength={40}
                       autoComplete="off"
                       spellCheck={false}
-                      data-lpignore="true"
-                      autoFocus={typeof window !== "undefined" && !("ontouchstart" in window)}
                       className="w-full rounded-2xl border border-cream/20 bg-plum px-4 py-3 text-base sm:text-sm text-cream placeholder:text-cream/40 focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/40 [touch-action:manipulation]"
                     />
                   </div>
-                  <p className="mt-1.5 text-[11px] text-cream/60">
-                    Your name or handle will be showcased alongside your styled outfit in the Hall of Fame. Press <kbd className="rounded bg-cream/10 px-1 py-0.5 font-mono text-[10px] text-cream/70">Enter</kbd> or <kbd className="rounded bg-cream/10 px-1 py-0.5 font-mono text-[10px] text-cream/70">⌘+Enter</kbd> to publish.
-                  </p>
                 </div>
+
+                {!profile && (
+                  <div>
+                    <label htmlFor="stylist-username" className="block text-xs font-bold tracking-normal text-cream/80">
+                      Stylist / Creator Username
+                    </label>
+                    <div className="mt-1.5 relative">
+                      <input
+                        id="stylist-username"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="@yourname or handle"
+                        maxLength={30}
+                        autoComplete="off"
+                        spellCheck={false}
+                        data-lpignore="true"
+                        className="w-full rounded-2xl border border-cream/20 bg-plum px-4 py-3 text-base sm:text-sm text-cream placeholder:text-cream/40 focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/40 [touch-action:manipulation]"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-[11px] text-cream/60">
+                  {profile
+                    ? `Publishing as @${profile.username}. Your outfit will be showcased in the Hall of Fame.`
+                    : "Your name or handle will be showcased alongside your styled outfit in the Hall of Fame."}
+                </p>
 
                 <div className="mt-2 grid grid-cols-2 gap-3">
                   <Button
@@ -623,6 +677,11 @@ export default function DressUp() {
           </div>
         )}
       </AnimatePresence>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
     </div>
   );
 }

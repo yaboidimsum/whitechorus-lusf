@@ -1,19 +1,10 @@
 import type { CharacterId, Look, SavedLook } from "@/lib/types";
+import { createBrowserClient } from "@/lib/supabase/client";
+import { uploadOutfitAsset } from "@/lib/supabase/storage";
 
-/**
- * Versioned localStorage persistence — rule `client-localstorage-schema`.
- * - Key carries a version (`looks:v2`) so schema changes migrate cleanly.
- * - All reads/writes wrapped in try-catch (localStorage throws in private
- *   browsing, when disabled, or on quota overflow).
- * - Exposed as an external store (`useSyncExternalStore`) so client-only data
- *   never diverges from the server render during hydration.
- *
- * v2 stores a full stage snapshot (both characters + scene). Legacy `looks:v1`
- * held placeholder color-block looks and is dropped on first load.
- */
-
-const STORAGE_KEY = "looks:v4";
-const LEGACY_KEY = "looks:v3";
+const STORAGE_KEY = "looks:v5";
+const LEGACY_KEYS = ["looks:v3", "looks:v4"];
+const MY_LOOKS_KEY = "my_look_ids:v2";
 
 interface StoredShape {
   looks: Record<string, SavedLook>;
@@ -81,7 +72,7 @@ function seedExamples(shape: StoredShape) {
 
   const base = Date.now();
   combos.forEach((c, i) => {
-    const id = String(shape.nextId);
+    const id = `demo-${shape.nextId}`;
     shape.looks[id] = {
       id,
       looks: { emir: c.emir, friska: c.friska },
@@ -103,7 +94,7 @@ function readAll(): StoredShape {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) store = JSON.parse(raw) as StoredShape;
-    localStorage.removeItem(LEGACY_KEY); // drop previous version data
+    LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
   } catch {
     store = defaultValue();
   }
@@ -126,17 +117,20 @@ function writeAll(shape: StoredShape) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(shape));
   } catch {
-    // storage unavailable (incognito/quota) — in-memory state still works for the session
+    // in-memory fallback
   }
   for (const listener of listeners) listener();
 }
 
-const MY_LOOKS_KEY = "my_look_ids:v1";
+const ANON_LOOKS_KEY = "stylist:anon_look_ids:v1";
+const LEGACY_MY_LOOK_KEYS = ["my_look_ids:v1", "my_look_ids:v2"];
 
-export function getMyLookIds(): Set<string> {
+export function getAnonymousLookIds(): Set<string> {
   if (typeof window === "undefined") return new Set();
   try {
-    const raw = localStorage.getItem(MY_LOOKS_KEY);
+    // Purge legacy unscoped keys that caused cross-account ownership bleed
+    LEGACY_MY_LOOK_KEYS.forEach((k) => localStorage.removeItem(k));
+    const raw = localStorage.getItem(ANON_LOOKS_KEY);
     if (!raw) return new Set();
     const parsed = JSON.parse(raw);
     return new Set(Array.isArray(parsed) ? parsed : []);
@@ -145,33 +139,130 @@ export function getMyLookIds(): Set<string> {
   }
 }
 
-export function isMyLook(id: string): boolean {
-  return getMyLookIds().has(id);
-}
-
-export function addMyLookId(id: string) {
+export function addAnonymousLookId(id: string) {
   if (typeof window === "undefined") return;
   try {
-    const set = getMyLookIds();
+    const set = getAnonymousLookIds();
     set.add(id);
-    localStorage.setItem(MY_LOOKS_KEY, JSON.stringify(Array.from(set)));
+    localStorage.setItem(ANON_LOOKS_KEY, JSON.stringify(Array.from(set)));
   } catch {}
 }
 
-export function saveLook(
+export function isLookAuthor(look: SavedLook | undefined | null, currentUserId?: string | null): boolean {
+  if (!look) return false;
+  // If look has a database userId
+  if (look.userId) {
+    return !!currentUserId && look.userId === currentUserId;
+  }
+  // Demo looks belong to nobody
+  if (look.demo) return false;
+  // If guest without userId, check anonymous look session
+  if (!currentUserId) {
+    return getAnonymousLookIds().has(look.id);
+  }
+  return false;
+}
+
+export function isMyLook(id: string, currentUserId?: string | null): boolean {
+  const shape = readAll();
+  const target = shape.looks[id];
+  return isLookAuthor(target, currentUserId);
+}
+
+/**
+ * Fetch public looks from Supabase Postgres database and merge with optimistic cache.
+ */
+export async function syncRemoteLooks(): Promise<void> {
+  const supabase = createBrowserClient();
+  if (!supabase) return;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUserId = session?.user?.id;
+
+    // Fetch outfits joined with creator profiles
+    const { data: outfitsData, error: outfitsError } = await supabase
+      .from("outfits")
+      .select(`
+        id,
+        user_id,
+        title,
+        scene_id,
+        looks,
+        custom_scene,
+        custom_kaos,
+        rating_avg,
+        ratings_count,
+        created_at,
+        profiles (
+          username,
+          display_name
+        )
+      `)
+      .order("created_at", { ascending: false })
+      .limit(60);
+
+    if (outfitsError || !outfitsData) return;
+
+    // Fetch user's individual ratings if signed in
+    let userRatingsMap = new Map<string, number>();
+    if (currentUserId) {
+      const { data: ratingsData } = await (supabase as any)
+        .from("outfit_ratings")
+        .select("outfit_id, stars")
+        .eq("user_id", currentUserId);
+
+      if (ratingsData && Array.isArray(ratingsData)) {
+        ratingsData.forEach((r: any) => userRatingsMap.set(r.outfit_id, r.stars));
+      }
+    }
+
+    const shape = readAll();
+
+    outfitsData.forEach((row: any) => {
+      const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
+      const username = profile?.username ? `@${profile.username}` : "@stylist";
+
+      shape.looks[row.id] = {
+        id: row.id,
+        userId: row.user_id,
+        title: row.title || "Untitled Look",
+        looks: (row.looks as Record<CharacterId, Look>) || { emir: {}, friska: {} },
+        sceneId: row.scene_id,
+        customScene: (row.custom_scene as any) || undefined,
+        customKaos: (row.custom_kaos as any) || undefined,
+        savedAt: new Date(row.created_at).getTime(),
+        username,
+        rating: userRatingsMap.get(row.id) ?? 0,
+        ratingAvg: Number(row.rating_avg) || 0,
+        ratingsCount: Number(row.ratings_count) || 0,
+      };
+    });
+
+    writeAll(shape);
+  } catch (err) {
+    console.warn("Failed to sync looks with remote Supabase database:", err);
+  }
+}
+
+export async function saveLook(
   looks: Record<CharacterId, Look>,
   sceneId: string,
   username = "Anonymous Stylist",
   rating = 0,
   customScene?: import("@/lib/types").CustomSceneData,
   customKaos?: Partial<Record<CharacterId, import("@/lib/types").CustomKaosData>>,
-): SavedLook {
+  title = "Untitled Look"
+): Promise<SavedLook> {
+  const supabase = createBrowserClient();
   const shape = readAll();
-  const id = String(shape.nextId);
+  const localId = `look-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const cleanUsername = username.trim() ? (username.startsWith("@") ? username.trim() : `@${username.trim()}`) : "@stylist";
   const userRate = Math.max(0, Math.min(5, rating));
+
   const saved: SavedLook = {
-    id,
+    id: localId,
+    title,
     looks,
     sceneId,
     ...(customScene && sceneId === "custom" ? { customScene } : {}),
@@ -182,22 +273,92 @@ export function saveLook(
     ratingAvg: userRate > 0 ? userRate : 0,
     ratingsCount: userRate > 0 ? 1 : 0,
   };
-  shape.looks[id] = saved;
-  shape.nextId += 1;
+
+  // Optimistic local cache update
+  shape.looks[localId] = saved;
+  addAnonymousLookId(localId);
   writeAll(shape);
-  addMyLookId(id);
+
+  // Background Supabase Sync
+  if (supabase) {
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+        const userId = session.user.id;
+
+        // Upload custom background asset if present
+        let uploadedCustomScene = customScene;
+        if (customScene?.src && customScene.src.startsWith("data:")) {
+          const bgUrl = await uploadOutfitAsset(userId, customScene.src, "bg");
+          uploadedCustomScene = { ...customScene, src: bgUrl };
+        }
+
+        // Upload custom kaos artwork assets if present
+        let uploadedCustomKaos = customKaos;
+        if (customKaos) {
+          uploadedCustomKaos = { ...customKaos };
+          for (const charId of ["emir", "friska"] as CharacterId[]) {
+            const data = customKaos[charId];
+            if (data?.artworkSrc && data.artworkSrc.startsWith("data:")) {
+              const artUrl = await uploadOutfitAsset(
+                userId,
+                data.artworkSrc,
+                charId === "emir" ? "kaos_emir" : "kaos_friska"
+              );
+              uploadedCustomKaos[charId] = { ...data, artworkSrc: artUrl };
+            }
+          }
+        }
+
+        const { data: inserted, error } = await (supabase as any)
+          .from("outfits")
+          .insert({
+            user_id: userId,
+            title,
+            scene_id: sceneId,
+            looks: looks as any,
+            custom_scene: uploadedCustomScene ? (uploadedCustomScene as any) : null,
+            custom_kaos: uploadedCustomKaos ? (uploadedCustomKaos as any) : null,
+            is_public: true,
+          })
+          .select("id, created_at")
+          .single();
+
+        if (!error && inserted) {
+          // Replace local optimistic key with database UUID
+          delete shape.looks[localId];
+          const dbSaved: SavedLook = {
+            ...saved,
+            id: inserted.id,
+            userId,
+            customScene: uploadedCustomScene,
+            customKaos: uploadedCustomKaos,
+            savedAt: new Date(inserted.created_at).getTime(),
+          };
+          shape.looks[inserted.id] = dbSaved;
+          writeAll(shape);
+        }
+      } catch (e) {
+        console.warn("Supabase background save error fallback to local:", e);
+      }
+    })();
+  }
+
   return saved;
 }
 
-export function rateLook(id: string, newRating: number): boolean {
-  // Prevent rating own submission
-  if (isMyLook(id)) {
-    return false;
-  }
+export async function rateLook(id: string, newRating: number, currentUserId?: string | null): Promise<boolean> {
+  if (!currentUserId) return false;
 
   const shape = readAll();
   const target = shape.looks[id];
   if (!target) return false;
+
+  // Prevent rating own submission
+  if (isLookAuthor(target, currentUserId)) {
+    return false;
+  }
 
   const validRate = Math.max(1, Math.min(5, newRating));
   const prevCount = target.ratingsCount ?? 0;
@@ -214,54 +375,79 @@ export function rateLook(id: string, newRating: number): boolean {
     totalScore = totalScore + validRate;
   }
 
+  // Optimistic local update
   target.rating = validRate;
   target.ratingsCount = newCount;
   target.ratingAvg = Number((totalScore / Math.max(1, newCount)).toFixed(1));
   writeAll(shape);
+
+  // Sync with Supabase Database
+  const supabase = createBrowserClient();
+  if (supabase && !id.startsWith("demo-") && !id.startsWith("look-")) {
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+        await (supabase as any)
+          .from("outfit_ratings")
+          .upsert(
+            {
+              outfit_id: id,
+              user_id: session.user.id,
+              stars: validRate,
+            },
+            { onConflict: "outfit_id,user_id" }
+          );
+      } catch (err) {
+        console.warn("Remote rating error fallback:", err);
+      }
+    })();
+  }
+
   return true;
 }
 
-export function deleteLook(id: string): boolean {
-  if (!isMyLook(id)) return false;
+export async function deleteLook(id: string, currentUserId?: string | null): Promise<boolean> {
   const shape = readAll();
+  const target = shape.looks[id];
+  if (!target || !isLookAuthor(target, currentUserId)) return false;
+
   delete shape.looks[id];
   writeAll(shape);
+
+  const supabase = createBrowserClient();
+  if (supabase && !id.startsWith("demo-") && !id.startsWith("look-")) {
+    (async () => {
+      try {
+        await supabase.from("outfits").delete().eq("id", id);
+      } catch (err) {
+        console.warn("Remote delete error fallback:", err);
+      }
+    })();
+  }
+
   return true;
 }
 
-/** Restore a previously deleted look with its original id (undo). */
 export function restoreLook(saved: SavedLook) {
   const shape = readAll();
   shape.looks[saved.id] = saved;
-  const n = Number.parseInt(saved.id, 10);
-  if (!Number.isNaN(n) && n >= shape.nextId) shape.nextId = n + 1;
   writeAll(shape);
 }
 
-/** Client snapshot — referentially stable between changes (for useSyncExternalStore). */
 export function getLooksSnapshot(): SavedLook[] {
   if (!cache) snapshot = Object.values(readAll().looks);
   return snapshot;
 }
 
-/** Server / hydration snapshot — empty, since localStorage is client-only. */
 const SERVER_SNAPSHOT: SavedLook[] = [];
 export function getServerLooksSnapshot(): SavedLook[] {
   return SERVER_SNAPSHOT;
 }
 
-/** Subscribe to look changes (same-tab writes + cross-tab `storage` events). */
-export function subscribeLooks(onChange: () => void) {
-  listeners.add(onChange);
-  const onStorage = (e: StorageEvent) => {
-    if (e.key === STORAGE_KEY) {
-      cache = null;
-      notify();
-    }
-  };
-  window.addEventListener("storage", onStorage);
+export function subscribeLooks(callback: () => void): () => void {
+  listeners.add(callback);
   return () => {
-    listeners.delete(onChange);
-    window.removeEventListener("storage", onStorage);
+    listeners.delete(callback);
   };
 }

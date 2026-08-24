@@ -18,16 +18,19 @@ const variants = [
 ];
 
 export default function PrototypeDressUpPage() {
-  const [current, setCurrent] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    const v = Number.parseInt(new URLSearchParams(window.location.search).get("v") || "1", 10);
-    const i = Number.isNaN(v) ? 1 : v;
-    return Math.min(Math.max(i - 1, 0), variants.length - 1);
-  });
+  const [current, setCurrent] = useState(0);
   const [ready, setReady] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
   const highlightRef = useRef<HTMLSpanElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    try {
+      const v = Number.parseInt(new URLSearchParams(window.location.search).get("v") || "1", 10);
+      const i = Number.isNaN(v) ? 1 : v;
+      setCurrent(Math.min(Math.max(i - 1, 0), variants.length - 1));
+    } catch {}
+  }, []);
 
   // Position the sliding highlight; enabled only after first paint (data-ready).
   useLayoutEffect(() => {

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { characters, itemById, layerOrder } from "@/data/characters";
 import { sceneById } from "@/data/assets";
 import { downloadSavedLook, shareInstagramStory } from "@/lib/export";
-import { isMyLook } from "@/lib/looks";
+import { isLookAuthor } from "@/lib/looks";
 import { formatCount } from "@/lib/utils";
 import type { SavedLook } from "@/lib/types";
 import LookPreview from "./LookPreview";
@@ -17,6 +17,7 @@ import InstagramStoryShareModal from "./InstagramStoryShareModal";
 
 interface LookDetailModalProps {
   look: SavedLook | null;
+  currentUserId?: string | null;
   isOpen: boolean;
   onClose: () => void;
   onRate?: (lookId: string, rating: number) => void;
@@ -30,6 +31,7 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
 
 export default function LookDetailModal({
   look,
+  currentUserId,
   isOpen,
   onClose,
   onRate,
@@ -52,7 +54,7 @@ export default function LookDetailModal({
 
   if (!look) return null;
 
-  const isMine = isMyLook(look.id);
+  const isMine = isLookAuthor(look, currentUserId);
   const scene = sceneById.get(look.sceneId);
 
   const handleDownloadImg = async () => {

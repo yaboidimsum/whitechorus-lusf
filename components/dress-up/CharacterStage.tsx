@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import {
   characters,
+  getCharacterBaseSrc,
   itemById,
   itemsFor,
   layerOrder,
@@ -203,7 +204,7 @@ function CharacterFigure({
       <div className="relative aspect-[990/1400] w-full">
         {/* Base character */}
         <Image
-          src={character.baseSrc}
+          src={getCharacterBaseSrc(character.id, look.hair)}
           alt=""
           fill
           priority
@@ -212,8 +213,9 @@ function CharacterFigure({
           className="object-contain select-none pointer-events-none"
         />
 
-        {/* Wardrobe in strict stack order (hair -> shoes -> one-piece -> bottom -> top -> accessory) */}
+        {/* Wardrobe in strict stack order (shoes -> one-piece -> bottom -> top -> accessory) */}
         {layerOrderFor(character.id).map((slot) => {
+          if (slot === "hair") return null;
           if (slot === "top" && isCustomKaos) {
             return (
               <div key="custom-kaos-layer" className="absolute inset-0 pointer-events-none select-none">

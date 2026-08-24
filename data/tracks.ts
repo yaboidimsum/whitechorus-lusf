@@ -1,0 +1,147 @@
+export interface Track {
+  id: string;
+  title: string;
+  artist: string;
+  src: string;
+  cover: string;
+  album: string;
+  durationSec: number;
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  youtubeUrl?: string;
+}
+
+export const TRACKS: Track[] = [
+  {
+    id: "melayang",
+    title: "Melayang",
+    artist: "White Chorus",
+    album: "Love Under Flashing Strobe",
+    durationSec: 230,
+    src: "/audio/melayang.mp3",
+    cover: "/assets/lufs/background/lufs-cover-sm.jpg",
+    spotifyUrl: "https://open.spotify.com/track/61LkdLYN1uMt4hpe59r2kJ",
+    appleMusicUrl: "https://music.apple.com/us/album/melayang-single/6795890399",
+    youtubeUrl: "https://youtu.be/MI_Kvwd7zLA",
+  },
+  {
+    id: "minggu",
+    title: "Minggu",
+    artist: "White Chorus ft. Dzulfahmi",
+    album: "do you guys wanna listen to some electro-pop music?",
+    durationSec: 224,
+    src: "/audio/minggu.mp3",
+    cover: "/album-5.jpg",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "bertanya-tanya",
+    title: "Bertanya-Tanya",
+    artist: "White Chorus",
+    album: "do you guys wanna listen to some electro-pop music?",
+    durationSec: 197,
+    src: "/audio/bertanya-tanya.mp3",
+    cover: "/album-5.jpg",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "mystery-part-2",
+    title: "Mystery Part 2",
+    artist: "White Chorus",
+    album: "do you guys wanna listen to some electro-pop music?",
+    durationSec: 189,
+    src: "/audio/mystery-part-2.mp3",
+    cover: "/album-5.jpg",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "mungkin",
+    title: "Mungkin",
+    artist: "White Chorus",
+    album: "do you guys *still* wanna listen to some electro-pop music?",
+    durationSec: 249,
+    src: "/audio/mungkin.mp3",
+    cover: "/album-4.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "ingatlah-aku-disini",
+    title: "Ingatlah Aku Di Sini",
+    artist: "White Chorus",
+    album: "do you guys *still* wanna listen to some electro-pop music?",
+    durationSec: 186,
+    src: "/audio/ingatlah-aku-disini.mp3",
+    cover: "/album-4.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "amarah",
+    title: "Amarah",
+    artist: "White Chorus",
+    album: "LIMBO +",
+    durationSec: 197,
+    src: "/audio/amarah.mp3",
+    cover: "/album-2.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "how-could-u",
+    title: "HoW cOuLd U",
+    artist: "White Chorus",
+    album: "LIMBO +",
+    durationSec: 242,
+    src: "/audio/how-could-u.mp3",
+    cover: "/album-2.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "mystery",
+    title: "Mystery",
+    artist: "White Chorus",
+    album: "LIMBO +",
+    durationSec: 189,
+    src: "/audio/mystery.mp3",
+    cover: "/album-2.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "dont-want-this-to-be-over",
+    title: "Don't Want This To Be Over",
+    artist: "White Chorus",
+    album: "LIMBO +",
+    durationSec: 121,
+    src: "/audio/dont-want-this-to-be-over.mp3",
+    cover: "/album-2.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "this-feeling",
+    title: "This Feeling",
+    artist: "White Chorus",
+    album: "LIMBO +",
+    durationSec: 163,
+    src: "/audio/this-feeling.mp3",
+    cover: "/album-2.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "disappear",
+    title: "Disappear",
+    artist: "White Chorus",
+    album: "FASTFOOD",
+    durationSec: 139,
+    src: "/audio/disappear.mp3",
+    cover: "/album-1.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+  {
+    id: "heatwave",
+    title: "Heatwave",
+    artist: "White Chorus",
+    album: "FASTFOOD",
+    durationSec: 170,
+    src: "/audio/heatwave.mp3",
+    cover: "/album-1.png",
+    spotifyUrl: "https://open.spotify.com/artist/61LkdLYN1uMt4hpe59r2kJ",
+  },
+];

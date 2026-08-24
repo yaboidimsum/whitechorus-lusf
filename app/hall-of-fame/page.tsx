@@ -1,9 +1,13 @@
 import HallOfFame from "@/components/dress-up/HallOfFame";
+import UserNav from "@/components/auth/UserNav";
 
 export default function HallOfFamePage() {
   return (
-    <main id="main" className="flex-1 px-4 py-8 sm:px-6 sm:py-12">
+    <main id="main" className="flex-1 px-4 py-6 sm:px-6 sm:py-10">
       <div className="mx-auto w-full max-w-5xl">
+        <div className="mb-4 flex items-center justify-end">
+          <UserNav />
+        </div>
         <header className="mb-8 text-center">
           <p className="text-xs font-bold tracking-normal text-pink-neon">
             White Chorus

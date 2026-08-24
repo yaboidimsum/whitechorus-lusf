@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useSyncExternalStore, useState, useMemo, useCallback, useDeferredValue, Suspense } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { useSyncExternalStore, useState, useMemo, useCallback, useDeferredValue, useEffect, Suspense } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
-import { Share2, Download, Sparkles, Plus, Eye, Search, X } from "lucide-react";
+import { Share2, Download, Sparkles, Plus, Eye, Search, X, ChevronLeft, ChevronRight, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -14,11 +14,13 @@ import {
   deleteLook,
   getLooksSnapshot,
   getServerLooksSnapshot,
-  isMyLook,
+  isLookAuthor,
   rateLook,
   restoreLook,
   subscribeLooks,
+  syncRemoteLooks,
 } from "@/lib/looks";
+import { useUser } from "@/hooks/use-user";
 import type { SavedLook } from "@/lib/types";
 import { downloadSavedLook, shareInstagramStory } from "@/lib/export";
 import { formatCount } from "@/lib/utils";
@@ -27,6 +29,7 @@ import LookDetailModal from "./LookDetailModal";
 import StarRating from "./StarRating";
 import { SubmissionCard } from "./SubmissionCard";
 import InstagramStoryShareModal from "./InstagramStoryShareModal";
+import AuthModal from "@/components/auth/AuthModal";
 
 const PAGE_SIZE = 9;
 const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
@@ -44,6 +47,7 @@ const sortOptions = [
 function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" }) {
   const searchParams = useSearchParams();
   const justSavedId = searchParams.get("justSaved");
+  const { user } = useUser();
 
   const savedLooks = useSyncExternalStore(
     subscribeLooks,
@@ -60,6 +64,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [selectedModalLook, setSelectedModalLook] = useState<SavedLook | null>(null);
   const [storyModalLook, setStoryModalLook] = useState<SavedLook | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   // Reset page when search or sort changes
@@ -68,12 +73,33 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     setPage(0);
   };
 
+  const [spotlightIdx, setSpotlightIdx] = useState(0);
+
+  // Sync with Supabase Postgres on mount
+  useEffect(() => {
+    syncRemoteLooks();
+  }, []);
+
   // Determine if the current user has uploaded their own outfits
   const myLooks = useMemo(() => {
-    return savedLooks.filter((l) => isMyLook(l.id));
-  }, [savedLooks]);
+    return savedLooks.filter((l) => isLookAuthor(l, user?.id));
+  }, [savedLooks, user?.id]);
 
   const hasUserUploaded = myLooks.length > 0;
+
+  // Sync spotlightIdx when myLooks updates or justSavedId is provided
+  useEffect(() => {
+    if (justSavedId && myLooks.length > 0) {
+      const idx = myLooks.findIndex((l) => l.id === justSavedId);
+      if (idx !== -1) {
+        setSpotlightIdx(idx);
+        return;
+      }
+    }
+    if (spotlightIdx >= myLooks.length && myLooks.length > 0) {
+      setSpotlightIdx(myLooks.length - 1);
+    }
+  }, [myLooks, justSavedId, spotlightIdx]);
 
   const handleSortChange = (val: string) => {
     setSortBy(val);
@@ -129,23 +155,20 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
   const previewLooks = savedLooks.slice(-3).reverse();
 
   // Find spotlight look: ONLY displayed if the current user has uploaded their own outfit.
-  // If the current user has not uploaded any outfit, spotlightLook is null (TOP SHOW is empty).
-  const userNewestLook = hasUserUploaded ? myLooks[myLooks.length - 1] : null;
-
+  // Supports sliding across multiple user outfits
   const spotlightLook = hasUserUploaded
-    ? (justSavedId ? myLooks.find((s) => s.id === justSavedId) : null) ?? userNewestLook
+    ? myLooks[Math.max(0, Math.min(myLooks.length - 1, spotlightIdx))] ?? myLooks[0]
     : null;
-  const isSpotlightMine = spotlightLook ? isMyLook(spotlightLook.id) : false;
+  const isSpotlightMine = spotlightLook ? isLookAuthor(spotlightLook, user?.id) : false;
 
-  const handleDelete = useCallback((id: string, e?: React.MouseEvent) => {
+  const handleDelete = useCallback(async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!isMyLook(id)) {
+    const target = savedLooks.find((s) => s.id === id);
+    if (!target || !isLookAuthor(target, user?.id)) {
       toast.error("You can only delete your own outfits!");
       return;
     }
-    const target = savedLooks.find((s) => s.id === id);
-    if (!target) return;
-    const success = deleteLook(id);
+    const success = await deleteLook(id, user?.id);
     if (success) {
       setSelectedModalLook((prev) => (prev?.id === id ? null : prev));
       setAnnouncement("Outfit deleted.");
@@ -160,7 +183,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
         },
       });
     }
-  }, [savedLooks]);
+  }, [savedLooks, user?.id]);
 
   const handleDownload = useCallback(async (s: SavedLook, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -205,17 +228,23 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     [sharingId]
   );
 
-  const handleRate = useCallback((id: string, rating: number) => {
-    if (isMyLook(id)) {
+  const handleRate = useCallback(async (id: string, rating: number) => {
+    if (!user) {
+      toast.error("Please sign in to rate outfits!");
+      setShowAuthModal(true);
+      return;
+    }
+    const target = savedLooks.find((s) => s.id === id);
+    if (isLookAuthor(target, user?.id)) {
       toast.error("You cannot vote on your own outfit!");
       return;
     }
-    const success = rateLook(id, rating);
+    const success = await rateLook(id, rating, user?.id);
     if (success) {
       setSelectedModalLook((prev) => (prev?.id === id ? { ...prev, rating } : prev));
       toast.success(`Rated ${rating} star${rating > 1 ? "s" : ""}!`);
     }
-  }, []);
+  }, [savedLooks, user]);
 
   return (
     <div>
@@ -226,6 +255,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
       {/* Floating Detail Modal */}
       <LookDetailModal
         look={selectedModalLook}
+        currentUserId={user?.id}
         isOpen={!!selectedModalLook}
         onClose={() => setSelectedModalLook(null)}
         onRate={handleRate}
@@ -237,6 +267,12 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
         look={storyModalLook}
         isOpen={!!storyModalLook}
         onClose={() => setStoryModalLook(null)}
+      />
+
+      {/* Stylist Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
       />
 
       {variant === "preview" ? (
@@ -262,6 +298,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
                 <SubmissionCard
                   key={look.id}
                   look={look}
+                  currentUserId={user?.id}
                   isDownloading={downloadingId === look.id}
                   onOpenModal={setSelectedModalLook}
                   onDownload={handleDownload}
@@ -284,26 +321,105 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
               {spotlightLook && (
                 <section aria-label="Spotlight submission" className="mx-auto w-full max-w-xl text-center">
                   <div className="relative">
-                    {/* Badge */}
-                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-coral/30 bg-coral/15 px-4 py-1.5 text-xs font-bold tracking-normal text-coral">
-                      <Sparkles className="size-3.5" />
-                      {justSavedId === spotlightLook.id
-                        ? "🎉 Successfully Published to Hall of Fame!"
-                        : "✨ Your Spotlight Submission"}
+                    {/* Header Row: Badge & Version Controls */}
+                    <div className="mb-4 flex flex-wrap items-center justify-center gap-2.5">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-coral/30 bg-coral/15 px-4 py-1.5 text-xs font-bold tracking-normal text-coral">
+                        <Sparkles className="size-3.5" />
+                        {justSavedId === spotlightLook.id
+                          ? "🎉 Successfully Published to Hall of Fame!"
+                          : myLooks.length > 1
+                          ? "✨ Your Outfits Spotlight"
+                          : "✨ Your Spotlight Submission"}
+                      </div>
+
+                      {/* Multi-Outfit Carousel Navigation Header */}
+                      {myLooks.length > 1 && (
+                        <div className="flex items-center gap-1.5 rounded-full border border-cream/20 bg-plum-deep/90 px-2 py-1 shadow-md backdrop-blur-md">
+                          <button
+                            type="button"
+                            onClick={() => setSpotlightIdx((prev) => (prev > 0 ? prev - 1 : myLooks.length - 1))}
+                            className="flex size-6 items-center justify-center rounded-full bg-cream/10 text-cream transition-colors hover:bg-cream/20 hover:text-coral active:scale-90"
+                            aria-label="Previous outfit version"
+                          >
+                            <ChevronLeft className="size-3.5" />
+                          </button>
+                          <span className="px-1.5 text-[11px] font-bold text-coral">
+                            {spotlightIdx + 1} / {myLooks.length}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSpotlightIdx((prev) => (prev < myLooks.length - 1 ? prev + 1 : 0))}
+                            className="flex size-6 items-center justify-center rounded-full bg-cream/10 text-cream transition-colors hover:bg-cream/20 hover:text-coral active:scale-90"
+                            aria-label="Next outfit version"
+                          >
+                            <ChevronRight className="size-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Stage Preview Container */}
-                    <div
-                      onClick={() => setSelectedModalLook(spotlightLook)}
-                      className="group relative mx-auto max-w-sm cursor-pointer overflow-hidden rounded-3xl border border-cream/20 shadow-stage transition-transform duration-200 hover:scale-[1.01]"
-                    >
-                      <LookPreview look={spotlightLook} />
-                      <div className="absolute inset-0 flex items-center justify-center bg-plum-deep/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100">
-                        <span className="flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 text-xs font-bold text-plum-deep shadow-lg">
-                          <Eye className="size-4" />
-                          Open Full Preview
-                        </span>
-                      </div>
+                    {/* Stage Preview Container with Smooth Slide Transition */}
+                    <div className="relative mx-auto max-w-sm">
+                      {/* Left / Right Carousel Overlay Arrows on Desktop */}
+                      {myLooks.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setSpotlightIdx((prev) => (prev > 0 ? prev - 1 : myLooks.length - 1))}
+                            className="absolute -left-12 top-1/2 z-20 hidden -translate-y-1/2 sm:flex size-9 items-center justify-center rounded-full border border-cream/20 bg-plum-deep/85 text-cream shadow-lg backdrop-blur-md transition-transform hover:scale-110 hover:border-coral hover:text-coral active:scale-95"
+                            aria-label="Previous look"
+                          >
+                            <ChevronLeft className="size-5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSpotlightIdx((prev) => (prev < myLooks.length - 1 ? prev + 1 : 0))}
+                            className="absolute -right-12 top-1/2 z-20 hidden -translate-y-1/2 sm:flex size-9 items-center justify-center rounded-full border border-cream/20 bg-plum-deep/85 text-cream shadow-lg backdrop-blur-md transition-transform hover:scale-110 hover:border-coral hover:text-coral active:scale-95"
+                            aria-label="Next look"
+                          >
+                            <ChevronRight className="size-5" />
+                          </button>
+                        </>
+                      )}
+
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={spotlightLook.id}
+                          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+                          transition={{ duration: 0.2 }}
+                          onClick={() => setSelectedModalLook(spotlightLook)}
+                          className="group relative cursor-pointer overflow-hidden rounded-3xl border border-cream/20 shadow-stage transition-transform duration-200 hover:scale-[1.01]"
+                        >
+                          <LookPreview look={spotlightLook} />
+                          <div className="absolute inset-0 flex items-center justify-center bg-plum-deep/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100">
+                            <span className="flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 text-xs font-bold text-plum-deep shadow-lg">
+                              <Eye className="size-4" />
+                              Open Full Preview
+                            </span>
+                          </div>
+                        </motion.div>
+                      </AnimatePresence>
+
+                      {/* Dot Slide Indicators */}
+                      {myLooks.length > 1 && (
+                        <div className="mt-3 flex items-center justify-center gap-1.5">
+                          {myLooks.map((l, idx) => (
+                            <button
+                              key={l.id}
+                              type="button"
+                              onClick={() => setSpotlightIdx(idx)}
+                              aria-label={`Slide to outfit ${idx + 1}`}
+                              className={`h-2 rounded-full transition-all duration-200 ${
+                                idx === spotlightIdx
+                                  ? "w-6 bg-coral shadow-[0_0_8px_rgba(255,154,131,0.6)]"
+                                  : "w-2 bg-cream/25 hover:bg-cream/50"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Metadata & Interactive Rating */}
@@ -311,8 +427,13 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
                       <div className="text-center sm:text-left">
                         <div className="flex items-center justify-center gap-1.5 sm:justify-start">
                           <p className="text-sm font-bold text-coral sm:text-base">
-                            {spotlightLook.username || "@stylist"}
+                            {spotlightLook.title ? spotlightLook.title : spotlightLook.username || "@stylist"}
                           </p>
+                          {spotlightLook.title && (
+                            <span className="text-xs text-cream/60">
+                              by {spotlightLook.username}
+                            </span>
+                          )}
                           {isSpotlightMine && (
                             <span className="rounded-md bg-coral/20 px-1.5 py-0.5 text-[10px] font-bold tracking-normal text-coral">
                               You
@@ -479,6 +600,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
                           <SubmissionCard
                             key={look.id}
                             look={look}
+                            currentUserId={user?.id}
                             isDownloading={downloadingId === look.id}
                             onOpenModal={setSelectedModalLook}
                             onDownload={handleDownload}

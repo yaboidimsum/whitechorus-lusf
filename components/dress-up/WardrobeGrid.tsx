@@ -53,8 +53,13 @@ export default function WardrobeGrid({ character, look, onSelect }: WardrobeGrid
 
       {/* Item grid with tactile interactive springs */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        {options.map((item) => {
-          const selected = look[item.slot] === item.id;
+        {options.map((item, idx) => {
+          const selected =
+            item.slot === "hair"
+              ? look.hair
+                ? look.hair === item.id
+                : idx === 0
+              : look[item.slot] === item.id;
           return (
             <motion.button
               key={item.id}

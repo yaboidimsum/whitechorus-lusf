@@ -71,6 +71,10 @@ export type Look = Partial<Record<SlotId, string>>;
 
 export interface SavedLook {
   id: string;
+  /** Creator user id */
+  userId?: string;
+  /** Title of the outfit version */
+  title?: string;
   /** Full stage snapshot: both characters + scene. */
   looks: Record<CharacterId, Look>;
   sceneId: string;

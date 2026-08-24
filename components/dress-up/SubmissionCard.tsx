@@ -5,12 +5,13 @@ import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LookPreview from "./LookPreview";
 import StarRating from "./StarRating";
-import { isMyLook } from "@/lib/looks";
+import { isLookAuthor } from "@/lib/looks";
 import { formatCount } from "@/lib/utils";
 import type { SavedLook } from "@/lib/types";
 
 interface SubmissionCardProps {
   look: SavedLook;
+  currentUserId?: string | null;
   isDownloading?: boolean;
   onOpenModal: (look: SavedLook) => void;
   onDownload: (look: SavedLook, e: React.MouseEvent) => void;
@@ -25,13 +26,14 @@ const shortDateFormat = new Intl.DateTimeFormat(undefined, {
 
 function SubmissionCardComponent({
   look,
+  currentUserId,
   isDownloading = false,
   onOpenModal,
   onDownload,
   onDelete,
   onRate,
 }: SubmissionCardProps) {
-  const isMine = isMyLook(look.id);
+  const isMine = isLookAuthor(look, currentUserId);
   const voteCountStr = formatCount(look.ratingsCount ?? 0);
 
   return (

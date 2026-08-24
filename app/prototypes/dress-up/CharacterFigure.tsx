@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { itemById, layerOrder } from "@/data/characters";
+import { getCharacterBaseSrc, itemById, layerOrder } from "@/data/characters";
 import type { Character, Look } from "@/lib/types";
 
 /** Renders one character: transparent base body + worn layers, plus an
@@ -21,14 +21,14 @@ export function CharacterFigure({
 }) {
   const worn = layerOrder
     .map((slot) => itemById.get(look[slot] ?? ""))
-    .filter((item): item is NonNullable<typeof item> => item?.characterId === character.id);
+    .filter((item): item is NonNullable<typeof item> => item?.characterId === character.id && item?.slot !== "hair");
 
   const label = `${character.name}${worn.length ? ` wearing ${worn.map((w) => w.name).join(", ")}` : ""}`;
 
   return (
     <figure role="img" aria-label={label} className={`relative ${className}`}>
       <div className="relative w-full" style={{ aspectRatio: "990 / 1400" }}>
-        <Image src={character.baseSrc} alt="" fill sizes={sizes} className="object-contain" />
+        <Image src={getCharacterBaseSrc(character.id, look.hair)} alt="" fill sizes={sizes} className="object-contain" />
         {worn.map((item) => (
           <Image key={item.id} src={item.src} alt="" fill sizes={sizes} className="object-contain" />
         ))}

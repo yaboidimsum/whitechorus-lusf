@@ -8,6 +8,8 @@ import { branding } from "@/data/assets";
 import { characters } from "@/data/characters";
 import type { CharacterId } from "@/lib/types";
 
+import UserNav from "@/components/auth/UserNav";
+
 /** The Duo — bios drawn from the wc-reference notes. */
 const DUO_ORDER: CharacterId[] = ["friska", "emir"];
 const DUO_BIO: Record<CharacterId, string> = {
@@ -39,7 +41,12 @@ const DUO_SLIDES: CoverflowSlide[] = [
 export default function Home() {
   return (
     <main id="main" className="flex-1">
-      <header className="animate-rise mx-auto flex max-w-2xl flex-col items-center text-center px-4 pt-6 sm:px-6 sm:pt-10 lg:max-w-5xl">
+      {/* Top Bar with User Navigation */}
+      <div className="mx-auto flex max-w-2xl items-center justify-end px-4 pt-4 sm:px-6 lg:max-w-5xl">
+        <UserNav />
+      </div>
+
+      <header className="animate-rise mx-auto flex max-w-2xl flex-col items-center text-center px-4 pt-3 sm:px-6 sm:pt-6 lg:max-w-5xl">
         <div className="flex items-center justify-center gap-4 sm:gap-7">
           <Image
             src="/white-chorus-logo.png"
