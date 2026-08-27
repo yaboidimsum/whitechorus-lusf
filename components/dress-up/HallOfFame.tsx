@@ -80,10 +80,15 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     syncRemoteLooks();
   }, []);
 
+  // Real community looks only (exclude all demo data)
+  const realLooks = useMemo(() => {
+    return savedLooks.filter((l) => !l.demo && !l.id.startsWith("demo-"));
+  }, [savedLooks]);
+
   // Determine if the current user has uploaded their own outfits
   const myLooks = useMemo(() => {
-    return savedLooks.filter((l) => isLookAuthor(l, user?.id));
-  }, [savedLooks, user?.id]);
+    return realLooks.filter((l) => isLookAuthor(l, user?.id));
+  }, [realLooks, user?.id]);
 
   const hasUserUploaded = myLooks.length > 0;
 
@@ -107,12 +112,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
   };
 
   const filteredAndSortedLooks = useMemo(() => {
-    let list = [...savedLooks];
-
-    // If current user hasn't uploaded any outfit, only show outfits uploaded by people (exclude demo looks)
-    if (!hasUserUploaded) {
-      list = list.filter((item) => !item.demo);
-    }
+    let list = [...realLooks];
 
     // Filter by username search (using deferredSearchQuery for smooth typing)
     if (deferredSearchQuery.trim()) {
@@ -144,7 +144,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     });
 
     return list;
-  }, [savedLooks, deferredSearchQuery, sortBy, hasUserUploaded]);
+  }, [realLooks, deferredSearchQuery, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedLooks.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);
@@ -152,7 +152,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
     safePage * PAGE_SIZE,
     safePage * PAGE_SIZE + PAGE_SIZE,
   );
-  const previewLooks = savedLooks.slice(-3).reverse();
+  const previewLooks = realLooks.slice(-3).reverse();
 
   // Find spotlight look: ONLY displayed if the current user has uploaded their own outfit.
   // Supports sliding across multiple user outfits
@@ -292,7 +292,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
               </Link>
             </Button>
           </div>
-          {savedLooks.length > 0 ? (
+          {previewLooks.length > 0 ? (
             <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {previewLooks.map((look) => (
                 <SubmissionCard
@@ -315,7 +315,7 @@ function HallOfFameContent({ variant = "full" }: { variant?: "full" | "preview" 
         </div>
       ) : (
         <div>
-          {savedLooks.length > 0 ? (
+          {realLooks.length > 0 ? (
             <div className="space-y-12">
               {/* TOP MIDDLE SPOTLIGHT / RECENT SUBMISSION HERO */}
               {spotlightLook && (

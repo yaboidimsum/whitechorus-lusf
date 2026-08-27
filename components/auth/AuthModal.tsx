@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
-import { X, Sparkles, LogIn, UserPlus, Mail, Lock, User as UserIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { X, Sparkles } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
 
 interface AuthModalProps {
@@ -14,55 +12,24 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
-  const { isAnonymous, signInWithGoogle, signInWithPassword, signUpWithPassword, linkPermanentAccount } = useUser();
-  const [mode, setMode] = useState<"signin" | "signup">(isAnonymous ? "signup" : "signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { isAnonymous, signInWithGoogle } = useUser();
+  const [isConnecting, setIsConnecting] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please fill in email and password.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (mode === "signup") {
-        if (isAnonymous) {
-          const { error } = await linkPermanentAccount(email, password, username || undefined);
-          if (error) throw error;
-          toast.success("Account connected! Your outfits are now permanently saved.");
-        } else {
-          const { error } = await signUpWithPassword(email, password, username || email.split("@")[0]);
-          if (error) throw error;
-          toast.success("Account created successfully!");
-        }
-      } else {
-        const { error } = await signInWithPassword(email, password);
-        if (error) throw error;
-        toast.success("Signed in successfully!");
-      }
-      onClose();
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err?.message || "Authentication failed. Please check your credentials.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGoogleAuth = async () => {
+    setIsConnecting(true);
     try {
       const res = await signInWithGoogle();
       if (res?.error) {
-        toast.error(res.error.message || "Google Sign-In failed. Please check if Google provider is enabled in your Supabase Dashboard.");
+        toast.error(
+          res.error.message ||
+            "Google Sign-In failed. Please check if Google provider is enabled in your Supabase Dashboard."
+        );
+        setIsConnecting(false);
       }
     } catch (err: any) {
       toast.error(err?.message || "Failed to initialize Google Sign In");
+      setIsConnecting(false);
     }
   };
 
@@ -107,14 +74,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               : { opacity: 0, scale: 0.95, y: 15 }
           }
           transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
-          className="relative z-10 flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-cream/20 bg-plum/80 p-5 shadow-2xl backdrop-blur-2xl sm:p-7"
+          className="relative z-10 flex w-full max-w-md flex-col overflow-hidden rounded-3xl border border-cream/20 bg-plum/85 p-6 shadow-2xl backdrop-blur-2xl sm:p-8"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-cream/10 pb-4">
             <div className="flex items-center gap-2">
               <Sparkles className="size-5 text-coral" />
               <h2 className="text-base font-bold text-cream sm:text-lg">
-                {isAnonymous ? "Save Your Outfits" : mode === "signin" ? "Stylist Sign In" : "Create Stylist Account"}
+                {isAnonymous ? "Save Your Outfits" : "Stylist Sign In"}
               </h2>
             </div>
             <button
@@ -127,42 +94,24 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </button>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="mt-5 grid grid-cols-2 gap-1 rounded-full border border-cream/20 bg-plum-deep/60 p-1">
-            <button
-              type="button"
-              onClick={() => setMode("signin")}
-              className={`flex items-center justify-center gap-1.5 rounded-full py-2 text-xs font-bold transition-all ${
-                mode === "signin"
-                  ? "bg-coral text-plum-deep shadow-md"
-                  : "text-cream/80 hover:text-cream"
-              }`}
-            >
-              <LogIn className="size-3.5" />
-              <span>Sign In</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("signup")}
-              className={`flex items-center justify-center gap-1.5 rounded-full py-2 text-xs font-bold transition-all ${
-                mode === "signup"
-                  ? "bg-coral text-plum-deep shadow-md"
-                  : "text-cream/80 hover:text-cream"
-              }`}
-            >
-              <UserPlus className="size-3.5" />
-              <span>{isAnonymous ? "Link Account" : "Sign Up"}</span>
-            </button>
+          {/* Body Content */}
+          <div className="mt-5 text-center sm:text-left">
+            <p className="text-sm leading-relaxed text-cream/80 text-pretty">
+              Sign in with your Google account to save your styled outfits, publish looks to the Hall of Fame, and rate creations from the community.
+            </p>
           </div>
 
           {/* Google OAuth Button */}
-          <div className="mt-5">
-            <button
+          <div className="mt-6">
+            <motion.button
               type="button"
+              whileHover={shouldReduceMotion || isConnecting ? undefined : { scale: 1.02 }}
+              whileTap={shouldReduceMotion || isConnecting ? undefined : { scale: 0.98 }}
               onClick={handleGoogleAuth}
-              className="flex w-full min-h-[44px] items-center justify-center gap-2.5 rounded-2xl border border-cream/25 bg-cream/5 px-4 py-2.5 text-xs font-bold text-cream shadow-sm backdrop-blur-md transition-all hover:border-cream/40 hover:bg-cream/15 active:scale-[0.99]"
+              disabled={isConnecting}
+              className="flex min-h-[48px] w-full items-center justify-center gap-3 rounded-2xl border border-cream/25 bg-cream/10 px-5 py-3 text-xs sm:text-sm font-bold text-cream shadow-sm backdrop-blur-md transition-all hover:border-coral/50 hover:bg-cream/15 active:scale-[0.98] disabled:opacity-50"
             >
-              <svg className="size-4" viewBox="0 0 24 24">
+              <svg className="size-4 shrink-0" viewBox="0 0 24 24">
                 <path
                   fill="#EA4335"
                   d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
@@ -180,65 +129,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"
                 />
               </svg>
-              <span>Continue with Google</span>
-            </button>
+              <span>{isConnecting ? "Connecting to Google..." : "Continue with Google"}</span>
+            </motion.button>
           </div>
 
-          <div className="relative my-4 flex items-center justify-center">
-            <div className="h-[1px] w-full bg-cream/10" />
-            <span className="absolute bg-plum px-3 text-[11px] font-semibold text-cream/40">
-              or with email
-            </span>
+          {/* Footer Note */}
+          <div className="mt-5 rounded-2xl border border-cream/10 bg-plum-deep/50 p-3 text-center text-xs text-cream/60">
+            🔒 <span>Quick & secure 1-click login · No password required</span>
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-            {mode === "signup" && (
-              <div className="relative">
-                <UserIcon className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-cream/40" />
-                <Input
-                  type="text"
-                  placeholder="Stylist Handle (e.g. fashion_lover)"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10 text-xs"
-                />
-              </div>
-            )}
-
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-cream/40" />
-              <Input
-                type="email"
-                placeholder="Email address"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 text-xs"
-              />
-            </div>
-
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-cream/40" />
-              <Input
-                type="password"
-                placeholder="Password (min 6 characters)"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 text-xs"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              variant="coral"
-              disabled={loading}
-              className="mt-2 w-full text-xs font-bold"
-            >
-              {loading ? "Processing..." : mode === "signin" ? "Sign In to White Chorus" : "Create Account & Save Looks"}
-            </Button>
-          </form>
         </motion.div>
       </div>
     </AnimatePresence>

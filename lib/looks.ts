@@ -19,90 +19,35 @@ function defaultValue(): StoredShape {
   return { looks: {}, nextId: 1 };
 }
 
-/** Seeded example outfits so the Hall of Fame ships populated with rich community looks. */
-function seedExamples(shape: StoredShape) {
-  const sampleCreators = [
-    "@whitechorus",
-    "@clara.friska",
-    "@emir.agung",
-    "@lufs_jakarta",
-    "@afterglow.stylist",
-    "@strobe_dusk",
-    "@row9_krapela",
-    "@melayang_vibes",
-    "@synth_pop_id",
-    "@bandung_sound",
-    "@senayan_rave",
-    "@jakarta_underground",
-    "@kemang_club",
-    "@electro_chic",
-    "@midnight_strobe",
-    "@triphop_aesthetic",
-    "@dusk_stylist",
-    "@retro_glow",
-    "@neon_afterglow",
-    "@indie_jakarta",
-  ];
-
-  const sampleAvgs = [4.9, 4.8, 5.0, 4.7, 4.6, 4.9, 4.8, 4.5, 4.9, 5.0, 4.7, 4.8, 4.9, 4.6, 5.0, 4.8, 4.7, 4.9, 4.8, 5.0];
-  const sampleCounts = [42, 28, 65, 19, 14, 33, 25, 12, 51, 88, 22, 31, 45, 16, 73, 29, 18, 37, 26, 60];
-
-  const combos: Array<{ emir: Look; friska: Look; sceneId: string }> = [
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-joggers", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-scratch", shoes: "friska-shoes-high-tops" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-tee", bottom: "emir-bottom-shorts", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-jeans", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-utility", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-shorts", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-jeans", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
-    { emir: { top: "emir-top-tee", bottom: "emir-bottom-joggers", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-scratch", shoes: "friska-shoes-high-tops" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-shorts", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-utility", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-jeans", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-tee", bottom: "emir-bottom-joggers", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-scratch", shoes: "friska-shoes-high-tops" }, sceneId: "stage" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-shorts", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-utility", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-scratch", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
-    { emir: { top: "emir-top-tee", bottom: "emir-bottom-utility", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-jeans", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-joggers", shoes: "emir-shoes-boots", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-button", shoes: "friska-shoes-high-tops" }, sceneId: "stage" },
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-shorts", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-scratch", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-utility", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-jeans", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
-    { emir: { top: "emir-top-tee", bottom: "emir-bottom-shorts", shoes: "emir-shoes-boots", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-button", shoes: "friska-shoes-high-tops" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-joggers", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-jeans", shoes: "friska-shoes-knee-boots" }, sceneId: "stage" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-shorts", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-scratch", shoes: "friska-shoes-cowboy" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-tee", bottom: "emir-bottom-utility", shoes: "emir-shoes-high-tops", accessory: "emir-accessory-masks" }, friska: { top: "friska-top-tee", bottom: "friska-bottom-button", shoes: "friska-shoes-high-tops" }, sceneId: "stage" },
-    { emir: { top: "emir-top-hoodie", bottom: "emir-bottom-joggers", shoes: "emir-shoes-boots" }, friska: { top: "friska-top-blazer", bottom: "friska-bottom-scratch", shoes: "friska-shoes-knee-boots" }, sceneId: "dance-floor" },
-    { emir: { top: "emir-top-jacket", bottom: "emir-bottom-utility", shoes: "emir-shoes-high-tops" }, friska: { top: "friska-top-halter", bottom: "friska-bottom-jeans", shoes: "friska-shoes-cowboy" }, sceneId: "stage" },
-  ];
-
-  const base = Date.now();
-  combos.forEach((c, i) => {
-    const id = `demo-${shape.nextId}`;
-    shape.looks[id] = {
-      id,
-      looks: { emir: c.emir, friska: c.friska },
-      sceneId: c.sceneId,
-      savedAt: base - (combos.length - i) * 120_000,
-      demo: true,
-      username: sampleCreators[i % sampleCreators.length],
-      rating: 0,
-      ratingAvg: sampleAvgs[i % sampleAvgs.length],
-      ratingsCount: sampleCounts[i % sampleCounts.length],
-    };
-    shape.nextId += 1;
-  });
-}
-
 function readAll(): StoredShape {
   if (cache) return cache;
   let store = defaultValue();
+  let needsRewrite = false;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) store = JSON.parse(raw) as StoredShape;
+    if (raw) {
+      store = JSON.parse(raw) as StoredShape;
+      // Prune any legacy dummy/demo looks so Hall of Fame only has real data
+      if (store.looks && typeof store.looks === "object") {
+        for (const id of Object.keys(store.looks)) {
+          if (store.looks[id]?.demo || id.startsWith("demo-")) {
+            delete store.looks[id];
+            needsRewrite = true;
+          }
+        }
+      }
+    }
     LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
   } catch {
     store = defaultValue();
   }
-  // Seed examples on fresh key
-  if (store.nextId === 1 && Object.keys(store.looks).length === 0) {
-    seedExamples(store);
-  }
+
   cache = store;
+  if (needsRewrite) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    } catch {}
+  }
   return store;
 }
 
