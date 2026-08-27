@@ -107,7 +107,12 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
   // 1. Gather all image sources to load in parallel
   const urls: string[] = [sceneSrc];
 
-  const charLayers = characters.map((c) => {
+  const order = look.characterOrder ?? ["emir", "friska"];
+  const orderedCharacters = order
+    .map((id) => characters.find((c) => c.id === id)!)
+    .filter(Boolean);
+
+  const charLayers = orderedCharacters.map((c) => {
     const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
     const worn = layerOrder
       .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
@@ -244,7 +249,12 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
   const templateSrc = "/insta-story-template.png";
   const urls: string[] = [templateSrc, sceneSrc];
 
-  const charLayers = characters.map((c) => {
+  const order = look.characterOrder ?? ["emir", "friska"];
+  const orderedCharacters = order
+    .map((id) => characters.find((c) => c.id === id)!)
+    .filter(Boolean);
+
+  const charLayers = orderedCharacters.map((c) => {
     const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
     const worn = layerOrder
       .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))

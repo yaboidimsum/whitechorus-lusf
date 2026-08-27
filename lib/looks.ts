@@ -197,18 +197,21 @@ export async function saveLook(
   rating = 0,
   customScene?: import("@/lib/types").CustomSceneData,
   customKaos?: Partial<Record<CharacterId, import("@/lib/types").CustomKaosData>>,
-  title = "Untitled Look"
+  title = "Untitled Look",
+  characterOrder?: CharacterId[]
 ): Promise<SavedLook> {
   const supabase = createBrowserClient();
   const shape = readAll();
   const localId = `look-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const cleanUsername = username.trim() ? (username.startsWith("@") ? username.trim() : `@${username.trim()}`) : "@stylist";
   const userRate = Math.max(0, Math.min(5, rating));
+  const order = characterOrder ?? ["emir", "friska"];
 
   const saved: SavedLook = {
     id: localId,
     title,
     looks,
+    characterOrder: order,
     sceneId,
     ...(customScene && sceneId === "custom" ? { customScene } : {}),
     ...(customKaos && Object.keys(customKaos).length > 0 ? { customKaos } : {}),

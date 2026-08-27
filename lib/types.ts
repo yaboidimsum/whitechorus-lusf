@@ -87,6 +87,8 @@ export interface SavedLook {
   demo?: boolean;
   /** Creator username or handle (e.g. "@stylist_jkt"). */
   username?: string;
+  /** Optional character position arrangement (e.g. ["emir", "friska"] or ["friska", "emir"]) */
+  characterOrder?: CharacterId[];
   /** Current user's individual rating from 0 to 5 stars. */
   rating?: number;
   /** Average star rating (e.g. 4.8). */

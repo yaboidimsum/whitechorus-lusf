@@ -40,26 +40,29 @@ export default function LookPreview({ look }: { look: SavedLook }) {
       />
 
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-center px-0">
-        {characters.map((c, index) => {
-          const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
-          const customKaosData = look.customKaos?.[c.id];
-          const baseMaskSrc = `/assets/lufs/characters/custom-kaos/base-kaos-${c.id}.png`;
-          const outlineSrc = `/assets/lufs/characters/custom-kaos/outline-kaos-${c.id}.png`;
+        {(look.characterOrder ?? ["emir", "friska"])
+          .map((id) => characters.find((c) => c.id === id)!)
+          .filter(Boolean)
+          .map((c, index) => {
+            const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
+            const customKaosData = look.customKaos?.[c.id];
+            const baseMaskSrc = `/assets/lufs/characters/custom-kaos/base-kaos-${c.id}.png`;
+            const outlineSrc = `/assets/lufs/characters/custom-kaos/outline-kaos-${c.id}.png`;
 
-          const worn = layerOrder
-            .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
-            .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
+            const worn = layerOrder
+              .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
+              .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
 
-          return (
-            <figure
-              key={c.id}
-              className={`
-                relative
-                w-[66%]
-                shrink-0
-                ${index === 1 ? "-ml-[8%]" : ""}
-              `}
-            >
+            return (
+              <figure
+                key={c.id}
+                className={`
+                  relative
+                  w-[66%]
+                  shrink-0
+                  ${index === 1 ? "-ml-[8%]" : ""}
+                `}
+              >
               <div className="relative aspect-[990/1400] w-full">
                 <Image
                   src={getCharacterBaseSrc(c.id, look.looks[c.id]?.hair)}

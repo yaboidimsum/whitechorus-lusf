@@ -17,6 +17,7 @@ interface StageProps {
   scene: Scene;
   looks: Record<CharacterId, Look>;
   activeId: CharacterId;
+  characterOrder?: CharacterId[];
   customScene?: CustomSceneData | null;
   customKaos?: Partial<Record<CharacterId, CustomKaosData>> | null;
   onAdjustBg?: (updater: (prev: CustomSceneData) => CustomSceneData) => void;
@@ -27,6 +28,7 @@ export default function CharacterStage({
   scene,
   looks,
   activeId,
+  characterOrder,
   customScene,
   customKaos,
   onAdjustBg,
@@ -34,6 +36,11 @@ export default function CharacterStage({
 }: StageProps) {
   const isCustom = scene.id === "custom" && Boolean(customScene?.src);
   const dragRef = useRef<{ startX: number; startY: number; initialPosX: number; initialPosY: number } | null>(null);
+
+  const order = characterOrder ?? ["emir", "friska"];
+  const orderedCharacters = order
+    .map((id) => characters.find((c) => c.id === id)!)
+    .filter(Boolean);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (!isAdjustingBg || !onAdjustBg || !customScene) return;
@@ -78,37 +85,44 @@ export default function CharacterStage({
     <section
       className={`relative select-none overflow-hidden rounded-3xl border border-cream/15 shadow-stage ${
         isAdjustingBg
-          ? "ring-2 ring-coral cursor-grab active:cursor-grabbing touch-none"
+          ? "cursor-grab active:cursor-grabbing ring-2 ring-coral/50"
           : ""
       }`}
-      aria-label="Dressing room stage"
+      aria-label="Dress-up preview stage"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {/* Scene backdrop */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden select-none">
-        {isCustom && customScene ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={customScene.src}
-            alt="Custom Background"
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none origin-center transition-transform duration-75"
-            style={{
-              transform: `translate3d(${(customScene.posX - 50) * 0.8}%, ${(customScene.posY - 50) * 0.8}%, 0) scale(${customScene.scale})`,
-            }}
-          />
-        ) : (
+      <div className="relative aspect-[990/1400] w-full overflow-hidden bg-plum-deep/80">
+        {/* Stage scene background */}
+        {!isCustom && (
           <Image
             src={scene.src}
-            alt={scene.name}
+            alt=""
             fill
             priority
             draggable={false}
             sizes="(max-width: 640px) 100vw, 448px"
             className="object-cover select-none pointer-events-none"
+          />
+        )}
+
+        {/* Custom uploaded background */}
+        {isCustom && customScene?.src && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${customScene.src})`,
+              backgroundPosition: `${customScene.posX ?? 50}% ${customScene.posY ?? 50}%`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              transform: `scale(${customScene.scale ?? 1})`,
+              transformOrigin: "center center",
+              transition: isAdjustingBg ? "none" : "transform 0.15s ease-out",
+            }}
+            className="pointer-events-none select-none"
           />
         )}
 
@@ -133,7 +147,7 @@ export default function CharacterStage({
             isAdjustingBg ? "opacity-60 transition-opacity" : ""
           }`}
         >
-          {characters.map((character, index) => (
+          {orderedCharacters.map((character, index) => (
             <CharacterFigure
               key={character.id}
               character={character}
@@ -182,6 +196,7 @@ function CharacterFigure({
 
   return (
     <motion.figure
+      layout={shouldReduceMotion ? false : "position"}
       role="img"
       aria-label={description}
       animate={
@@ -192,7 +207,11 @@ function CharacterFigure({
               opacity: active ? 1 : 0.88,
             }
       }
-      transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}
+      transition={{
+        layout: { type: "spring", duration: 0.45, bounce: 0.15 },
+        opacity: { duration: 0.2 },
+        y: { type: "spring", duration: 0.35, bounce: 0.1 },
+      }}
       className={`
         relative
         w-[66%]

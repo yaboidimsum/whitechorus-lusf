@@ -203,22 +203,25 @@ export default function LookDetailModal({
                   <span className="text-cream/60">Stage Scene:</span>
                   <span className="font-semibold text-cream">{scene?.name ?? "Dance Floor"}</span>
                 </div>
-                {characters.map((c) => {
-                  const wornItems = layerOrder
-                    .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
-                    .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
+                {(look.characterOrder ?? ["emir", "friska"])
+                  .map((id) => characters.find((c) => c.id === id)!)
+                  .filter(Boolean)
+                  .map((c) => {
+                    const wornItems = layerOrder
+                      .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
+                      .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
 
-                  return (
-                    <div key={c.id} className="flex flex-col gap-0.5">
-                      <span className="font-bold text-coral">{c.name}:</span>
-                      <p className="text-cream/80">
-                        {wornItems.length > 0
-                          ? wornItems.map((item) => item.name).join(" · ")
-                          : "Base styling"}
-                      </p>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div key={c.id} className="flex flex-col gap-0.5">
+                        <span className="font-bold text-coral">{c.name}:</span>
+                        <p className="text-cream/80">
+                          {wornItems.length > 0
+                            ? wornItems.map((item) => item.name).join(" · ")
+                            : "Base styling"}
+                        </p>
+                      </div>
+                    );
+                  })}
               </div>
 
               {/* Actions */}

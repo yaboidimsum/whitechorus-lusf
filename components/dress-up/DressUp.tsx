@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
-import { Sparkles, X, Dices, ImagePlus, SlidersHorizontal, RotateCcw, ZoomIn, Paintbrush } from "lucide-react";
+import { Sparkles, X, Dices, ImagePlus, SlidersHorizontal, RotateCcw, ZoomIn, Paintbrush, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sceneById, scenes } from "@/data/assets";
 import { characters, itemsFor } from "@/data/characters";
@@ -25,6 +25,7 @@ export default function DressUp() {
   const router = useRouter();
   const { user, profile } = useUser();
   const [activeId, setActiveId] = useState<CharacterId>("emir");
+  const [characterOrder, setCharacterOrder] = useState<CharacterId[]>(["emir", "friska"]);
   const [looks, setLooks] = useState<Record<CharacterId, Look>>(emptyLooks);
   const [sceneId, setSceneId] = useState(scenes[0].id);
   const [customBg, setCustomBg] = useState<CustomSceneData | null>(null);
@@ -197,7 +198,8 @@ export default function DressUp() {
       0,
       customBg || undefined,
       customKaos,
-      lookTitle.trim() || "Untitled Look"
+      lookTitle.trim() || "Untitled Look",
+      characterOrder
     );
     setAnnouncement("Outfit saved to the Hall of Fame.");
     toast.success("Outfit saved to the Hall of Fame!");
@@ -206,6 +208,17 @@ export default function DressUp() {
 
     // Redirect to Hall of Fame with justSaved highlight parameter
     router.push(`/hall-of-fame?justSaved=${saved.id}`);
+  };
+
+  const handleSwapPositions = () => {
+    setCharacterOrder((prev) =>
+      prev[0] === "emir" ? ["friska", "emir"] : ["emir", "friska"]
+    );
+    setAnnouncement(
+      `Swapped positions: ${
+        characterOrder[0] === "emir" ? "Friska and Emir" : "Emir and Friska"
+      }`
+    );
   };
 
   return (
@@ -243,11 +256,25 @@ export default function DressUp() {
               scene={scene}
               looks={looks}
               activeId={activeId}
+              characterOrder={characterOrder}
               customScene={customBg}
               customKaos={customKaos}
               onAdjustBg={(updater) => setCustomBg((prev) => (prev ? updater(prev) : null))}
               isAdjustingBg={isAdjustingBg && sceneId === "custom"}
             />
+            {/* Swap positions button */}
+            <motion.button
+              type="button"
+              onClick={handleSwapPositions}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Swap character positions"
+              className="absolute left-3.5 top-3.5 z-30 flex items-center gap-1.5 rounded-2xl border border-cream/20 bg-plum-deep/85 px-3.5 py-2 text-xs font-bold text-coral shadow-[0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all hover:bg-coral hover:text-plum-deep hover:shadow-[0_6px_22px_rgba(255,154,131,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral/40"
+            >
+              <ArrowLeftRight className="size-4" />
+              <span>Swap</span>
+            </motion.button>
+            {/* Randomize button */}
             <motion.button
               type="button"
               onClick={handleRandomize}
