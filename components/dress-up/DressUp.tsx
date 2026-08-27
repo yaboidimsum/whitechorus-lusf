@@ -261,10 +261,16 @@ export default function DressUp() {
               customKaos={customKaos}
               onAdjustBg={(updater) => setCustomBg((prev) => (prev ? updater(prev) : null))}
               isAdjustingBg={isAdjustingBg && sceneId === "custom"}
+              onDoneAdjusting={() => {
+                setIsAdjustingBg(false);
+                toast.success("Background position locked! 🔒", { duration: 1500 });
+              }}
             />
             {/* Swap positions button */}
             <motion.button
               type="button"
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
               onClick={handleSwapPositions}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
@@ -277,6 +283,8 @@ export default function DressUp() {
             {/* Randomize button */}
             <motion.button
               type="button"
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
               onClick={handleRandomize}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
@@ -345,7 +353,14 @@ export default function DressUp() {
                 {sceneId === "custom" && customBg && (
                   <button
                     type="button"
-                    onClick={() => setIsAdjustingBg((prev) => !prev)}
+                    onClick={() => {
+                      if (isAdjustingBg) {
+                        setIsAdjustingBg(false);
+                        toast.success("Background position locked! 🔒", { duration: 1500 });
+                      } else {
+                        setIsAdjustingBg(true);
+                      }
+                    }}
                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
                       isAdjustingBg
                         ? "bg-coral text-plum-deep"
@@ -511,8 +526,8 @@ export default function DressUp() {
                       <ZoomIn className="size-4 text-cream/60 shrink-0" />
                       <input
                         type="range"
-                        min="1"
-                        max="2.2"
+                        min="0.5"
+                        max="2.5"
                         step="0.05"
                         value={customBg.scale}
                         onChange={(e) =>

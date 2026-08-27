@@ -40,7 +40,7 @@ const DUO_SLIDES: CoverflowSlide[] = [
 
 export default function Home() {
   return (
-    <main id="main" className="flex-1">
+    <main id="main" className="flex-1 overflow-x-clip">
       {/* Top Bar with User Navigation */}
       <div className="mx-auto flex max-w-2xl items-center justify-end px-4 pt-4 sm:px-6 lg:max-w-5xl">
         <UserNav />

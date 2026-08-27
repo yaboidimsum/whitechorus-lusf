@@ -167,14 +167,36 @@ export async function syncRemoteLooks(): Promise<void> {
     outfitsData.forEach((row: any) => {
       const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
       const username = profile?.username ? `@${profile.username}` : "@stylist";
+      const rawLooks = row.looks || {};
+      const characterOrder: CharacterId[] =
+        rawLooks._characterOrder ||
+        rawLooks.characterOrder ||
+        (row as any).character_order ||
+        shape.looks[row.id]?.characterOrder ||
+        ["emir", "friska"];
+
+      const cleanLooks: Record<CharacterId, Look> = {
+        emir: rawLooks.emir || {},
+        friska: rawLooks.friska || {},
+      };
+
+      const customScene = row.custom_scene
+        ? {
+            src: row.custom_scene.src,
+            posX: typeof row.custom_scene.posX === "number" ? row.custom_scene.posX : 50,
+            posY: typeof row.custom_scene.posY === "number" ? row.custom_scene.posY : 50,
+            scale: typeof row.custom_scene.scale === "number" ? row.custom_scene.scale : 1,
+          }
+        : undefined;
 
       shape.looks[row.id] = {
         id: row.id,
         userId: row.user_id,
         title: row.title || "Untitled Look",
-        looks: (row.looks as Record<CharacterId, Look>) || { emir: {}, friska: {} },
+        looks: cleanLooks,
+        characterOrder,
         sceneId: row.scene_id,
-        customScene: (row.custom_scene as any) || undefined,
+        customScene,
         customKaos: (row.custom_kaos as any) || undefined,
         savedAt: new Date(row.created_at).getTime(),
         username,
@@ -259,13 +281,19 @@ export async function saveLook(
           }
         }
 
+        const looksPayload = {
+          emir: looks.emir || {},
+          friska: looks.friska || {},
+          _characterOrder: order,
+        };
+
         const { data: inserted, error } = await (supabase as any)
           .from("outfits")
           .insert({
             user_id: userId,
             title,
             scene_id: sceneId,
-            looks: looks as any,
+            looks: looksPayload as any,
             custom_scene: uploadedCustomScene ? (uploadedCustomScene as any) : null,
             custom_kaos: uploadedCustomKaos ? (uploadedCustomKaos as any) : null,
             is_public: true,
@@ -280,6 +308,7 @@ export async function saveLook(
             ...saved,
             id: inserted.id,
             userId,
+            characterOrder: order,
             customScene: uploadedCustomScene,
             customKaos: uploadedCustomKaos,
             savedAt: new Date(inserted.created_at).getTime(),

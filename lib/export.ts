@@ -19,33 +19,28 @@ function drawImageProp(
   y: number,
   w: number,
   h: number,
-  offsetX = 0.5,
-  offsetY = 0.5,
+  posX = 50,
+  posY = 50,
   scale = 1
 ) {
   const iw = img.width;
   const ih = img.height;
-  const r = Math.min(w / iw, h / ih) * scale;
-  let nw = iw * r;
-  let nh = ih * r;
+  const s = Math.max(w / iw, h / ih);
+  const bw = iw * s;
+  const bh = ih * s;
+  const shiftX = (posX - 50) * 0.008 * w;
+  const shiftY = (posY - 50) * 0.008 * h;
+  const finalW = bw * scale;
+  const finalH = bh * scale;
+  const drawX = x + w / 2 + shiftX - finalW / 2;
+  const drawY = y + h / 2 + shiftY - finalH / 2;
 
-  if (nw < w) {
-    const r2 = w / nw;
-    nw = w;
-    nh = nh * r2;
-  }
-  if (nh < h) {
-    const r2 = h / nh;
-    nh = h;
-    nw = nw * r2;
-  }
-
-  const cw = (w / nw) * iw;
-  const ch = (h / nh) * ih;
-  const cx = Math.max(0, Math.min(iw - cw, (iw - cw) * offsetX));
-  const cy = Math.max(0, Math.min(ih - ch, (ih - ch) * offsetY));
-
-  ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  ctx.drawImage(img, drawX, drawY, finalW, finalH);
+  ctx.restore();
 }
 
 function drawCustomKaos(
@@ -165,10 +160,10 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
   // Draw background scene with custom pan / scale offsets
   const sceneImg = imgMap.get(sceneSrc);
   if (sceneImg) {
-    const offX = (look.customScene?.posX ?? 50) / 100;
-    const offY = (look.customScene?.posY ?? 50) / 100;
+    const posX = look.customScene?.posX ?? 50;
+    const posY = look.customScene?.posY ?? 50;
     const scale = look.customScene?.scale ?? 1;
-    drawImageProp(ctx, sceneImg, 0, 0, W, H, offX, offY, scale);
+    drawImageProp(ctx, sceneImg, 0, 0, W, H, posX, posY, scale);
   } else {
     // Fallback if background fails to load
     ctx.fillStyle = "#241a25";
@@ -186,12 +181,14 @@ export async function downloadSavedLook(look: SavedLook): Promise<void> {
   // Draw characters
   const charWidth = 0.66 * W; // 792px
   const charHeight = (1400 / 990) * charWidth; // 1120px
-  const overlap = 0.08 * W; // 96px
-  const totalWidth = charWidth * 2 - overlap; // 1488px
-  const startX = (W - totalWidth) / 2; // -144px
 
-  charLayers.forEach((cl, index) => {
-    const x = startX + index * (charWidth - overlap);
+  charLayers.forEach((cl) => {
+    const slotIndex = order.indexOf(cl.c.id);
+    const slot: "left" | "right" = slotIndex === 0 ? "left" : "right";
+    const x =
+      cl.c.id === "emir"
+        ? (slot === "left" ? -0.1053 : 0.2247) * W
+        : (slot === "left" ? 0.16 : 0.49) * W;
     const y = H - charHeight;
 
     // 1. Draw base character
@@ -313,10 +310,10 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
   // 1. Draw Scene Background filling the empty space window with custom pan & zoom offsets
   const sceneImg = imgMap.get(sceneSrc);
   if (sceneImg) {
-    const offX = (look.customScene?.posX ?? 50) / 100;
-    const offY = (look.customScene?.posY ?? 50) / 100;
+    const posX = look.customScene?.posX ?? 50;
+    const posY = look.customScene?.posY ?? 50;
     const scale = look.customScene?.scale ?? 1;
-    drawImageProp(ctx, sceneImg, frameX, frameY, frameW, frameH, offX, offY, scale);
+    drawImageProp(ctx, sceneImg, frameX, frameY, frameW, frameH, posX, posY, scale);
   } else {
     ctx.fillStyle = "#241a25";
     ctx.fillRect(frameX, frameY, frameW, frameH);
@@ -340,13 +337,16 @@ export async function createInstagramStoryCanvas(look: SavedLook): Promise<HTMLC
   // 3. Draw Characters positioned and scaled matching the original 4:5 image, lifted slightly higher
   const charWidth = 0.66 * frameW; // 580.8px (matching original 66% width ratio)
   const charHeight = (1400 / 990) * charWidth; // 821.33px
-  const overlap = 0.08 * frameW; // 70.4px (matching original 8% overlap)
-  const totalWidth = charWidth * 2 - overlap; // 1091.2px
-  const startX = frameX + (frameW - totalWidth) / 2; // Centered in the cutout window
   const y = frameY + frameH - charHeight - 65; // Lifted higher for balanced vertical composition
 
-  charLayers.forEach((cl, index) => {
-    const x = startX + index * (charWidth - overlap);
+  charLayers.forEach((cl) => {
+    const slotIndex = order.indexOf(cl.c.id);
+    const slot: "left" | "right" = slotIndex === 0 ? "left" : "right";
+    const x =
+      frameX +
+      (cl.c.id === "emir"
+        ? (slot === "left" ? -0.1053 : 0.2247) * frameW
+        : (slot === "left" ? 0.16 : 0.49) * frameW);
 
     // 1. Draw base character
     const baseImg = imgMap.get(cl.baseSrc);

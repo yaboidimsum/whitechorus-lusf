@@ -4,6 +4,7 @@ import Image from "next/image";
 import { characters, getCharacterBaseSrc, itemById, layerOrder } from "@/data/characters";
 import { sceneById } from "@/data/assets";
 import type { SavedLook } from "@/lib/types";
+import { getCharacterLeftPercent } from "./CharacterStage";
 
 /** Mini stage for a saved look: scene backdrop + both characters wearing
  *  their saved items. Layer images are already cached from dressing. */
@@ -12,24 +13,27 @@ export default function LookPreview({ look }: { look: SavedLook }) {
   const isCustom = (look.sceneId === "custom" || !scene) && Boolean(look.customScene?.src);
 
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden">
-      {isCustom && look.customScene ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={look.customScene.src}
-          alt="Custom Background"
-          className="absolute inset-0 h-full w-full object-cover origin-center"
-          style={{
-            transform: `translate3d(${(look.customScene.posX - 50) * 0.8}%, ${(look.customScene.posY - 50) * 0.8}%, 0) scale(${look.customScene.scale})`,
-          }}
-        />
+    <div className="relative aspect-[990/1400] w-full overflow-hidden bg-plum-deep/80">
+      {isCustom && look.customScene?.src ? (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={look.customScene.src}
+            alt="Custom Background"
+            draggable={false}
+            className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none origin-center"
+            style={{
+              transform: `translate3d(${(look.customScene.posX - 50) * 0.8}%, ${(look.customScene.posY - 50) * 0.8}%, 0) scale(${look.customScene.scale ?? 1})`,
+            }}
+          />
+        </div>
       ) : scene ? (
         <Image
           src={scene.src}
           alt={scene.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
-          className="object-cover"
+          className="object-cover pointer-events-none select-none"
         />
       ) : null}
 
@@ -39,30 +43,31 @@ export default function LookPreview({ look }: { look: SavedLook }) {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_20%,transparent_55%,rgba(20,8,22,0.55)_100%)]"
       />
 
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-center px-0">
-        {(look.characterOrder ?? ["emir", "friska"])
-          .map((id) => characters.find((c) => c.id === id)!)
-          .filter(Boolean)
-          .map((c, index) => {
-            const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
-            const customKaosData = look.customKaos?.[c.id];
-            const baseMaskSrc = `/assets/lufs/characters/custom-kaos/base-kaos-${c.id}.png`;
-            const outlineSrc = `/assets/lufs/characters/custom-kaos/outline-kaos-${c.id}.png`;
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 top-0 select-none">
+        {characters.map((c) => {
+          const order = look.characterOrder ?? ["emir", "friska"];
+          const slotIndex = order.indexOf(c.id);
+          const slot: "left" | "right" = slotIndex === 0 ? "left" : "right";
+          const leftOffset = getCharacterLeftPercent(c.id, slot);
 
-            const worn = layerOrder
-              .map((slot) => itemById.get(look.looks[c.id]?.[slot] ?? ""))
-              .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
+          const isCustomKaos = look.looks[c.id]?.top === `${c.id}-top-custom`;
+          const customKaosData = look.customKaos?.[c.id];
+          const baseMaskSrc = `/assets/lufs/characters/custom-kaos/base-kaos-${c.id}.png`;
+          const outlineSrc = `/assets/lufs/characters/custom-kaos/outline-kaos-${c.id}.png`;
 
-            return (
-              <figure
-                key={c.id}
-                className={`
-                  relative
-                  w-[66%]
-                  shrink-0
-                  ${index === 1 ? "-ml-[8%]" : ""}
-                `}
-              >
+          const worn = layerOrder
+            .map((slotId) => itemById.get(look.looks[c.id]?.[slotId] ?? ""))
+            .filter((item): item is NonNullable<typeof item> => item?.characterId === c.id);
+
+          return (
+            <figure
+              key={c.id}
+              style={{
+                left: leftOffset,
+                zIndex: slot === "left" ? 10 : 11,
+              }}
+              className="absolute bottom-0 w-[66%] shrink-0"
+            >
               <div className="relative aspect-[990/1400] w-full">
                 <Image
                   src={getCharacterBaseSrc(c.id, look.looks[c.id]?.hair)}

@@ -41,7 +41,7 @@ function SubmissionCardComponent({
       onClick={() => onOpenModal(look)}
       className="group relative cursor-pointer overflow-hidden rounded-3xl border border-cream/15 bg-plum/40 p-1.5 sm:p-2 shadow-sm backdrop-blur-md transition-all duration-200 hover:-translate-y-1 hover:border-coral/40 hover:bg-plum/70 hover:shadow-xl active:scale-[0.99]"
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+      <div className="relative overflow-hidden rounded-2xl">
         <LookPreview look={look} />
 
         {/* Floating Glass Badges */}
