@@ -66,29 +66,40 @@ function drawCustomKaos(
   const offCtx = offCanvas.getContext("2d");
   if (!offCtx) return;
 
-  // 1. Draw Base Silhouette
+  // 1. Draw base silhouette
   offCtx.drawImage(baseMaskImg, 0, 0, 990, 1400);
 
-  // 2. Fill with Base Color
+  // 2. Fill with base fabric color inside the garment silhouette
   offCtx.globalCompositeOperation = "source-in";
   offCtx.fillStyle = kaosData?.color || "#ffffff";
   offCtx.fillRect(0, 0, 990, 1400);
 
-  // 3. Draw Artwork if present
+  // 3. Draw artwork clipped to garment mask, layered on top of base fabric
   if (kaosData?.artworkSrc) {
     const artImg = imgMap.get(kaosData.artworkSrc);
     if (artImg) {
-      offCtx.drawImage(artImg, 0, 0, 990, 1400);
+      const artCanvas = document.createElement("canvas");
+      artCanvas.width = 990;
+      artCanvas.height = 1400;
+      const artCtx = artCanvas.getContext("2d");
+      if (artCtx) {
+        artCtx.drawImage(baseMaskImg, 0, 0, 990, 1400);
+        artCtx.globalCompositeOperation = "source-in";
+        artCtx.drawImage(artImg, 0, 0, 990, 1400);
+
+        offCtx.globalCompositeOperation = "source-over";
+        offCtx.drawImage(artCanvas, 0, 0, 990, 1400);
+      }
     }
   }
 
-  // 4. Draw Fabric Outlines on top
+  // 4. Draw fabric outlines, collar, and seams on top
   offCtx.globalCompositeOperation = "source-over";
   if (outlineImg) {
     offCtx.drawImage(outlineImg, 0, 0, 990, 1400);
   }
 
-  // 5. Blit onto target canvas
+  // 5. Blit composite onto target canvas
   ctx.drawImage(offCanvas, x, y, w, h);
 }
 
